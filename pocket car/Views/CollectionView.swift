@@ -57,7 +57,7 @@ struct EmptyCollectionView: View {
 }
 
 // Composant pour afficher la grille des cartes
-struct CollectionGridView: View {
+struct CollectionGridView1: View {
     let cards: [(card: BoosterCard, count: Int)]
     @Binding var selectedCard: BoosterCard?
 
