@@ -18,7 +18,7 @@ struct ContentView: View {
                 )
                 .ignoresSafeArea()
 
-                VStack(spacing: 90) {
+                VStack(spacing: 170) {
                     // En-tête stylisé
                     HStack {
                         Spacer()
@@ -86,9 +86,7 @@ struct ContentView: View {
                                     ), lineWidth: 2)
 
                                 VStack(spacing: 4) {
-                                    Text("Prochain booster gratuit dans:")
-                                        .font(.body)
-                                        .foregroundColor(.white.opacity(0.8))
+                
 
                                     HStack {
                                         ProgressView(value: 1 - (boosterAvailableIn / (1 * 3600)))
@@ -103,10 +101,10 @@ struct ContentView: View {
                                 }
                                 .padding(8)
                             }
-                            .frame(width: 320, height: 80)
-                            .offset(y: -170) // Positionnement du timer au-dessus des boosters
+                            .frame(width: 150, height: 8)
+                            .offset(y: 130) // Positionnement du timer au-dessus des boosters
                         } else {
-                            Text("Booster disponible !")
+                            Text("Click on a Booster")
                                 .font(.headline)
                                 .foregroundColor(.white)
                                 .padding()
@@ -117,10 +115,10 @@ struct ContentView: View {
                                             startPoint: .top,
                                             endPoint: .bottom
                                         ))
-                                        .shadow(color: .green.opacity(0.4), radius: 10, x: 0, y: 5)
+                                        .shadow(color: .green.opacity(1), radius: 10, x: 0, y: 5)
                                 )
-                                .frame(width: 320, height: 80)
-                                .offset(y: -170) // Positionnement du message au-dessus des boosters
+                                .frame(width: 320, height: 90)
+                                .offset(y: 130) // Positionnement du message au-dessus des boosters
                         }
                     }
 
