@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 struct ContentView: View {
     @StateObject var collectionManager = CollectionManager() // Instance partagée
@@ -6,6 +7,9 @@ struct ContentView: View {
     @State private var shadowRadius: CGFloat = 15 // Rayon de l'ombre
     @State private var boosterAvailableIn: TimeInterval = 1 * 3 // Temps d'attente en secondes (1 heure)
     @State private var timer: Timer? = nil
+    
+    @State private var audioPlayer: AVAudioPlayer? // Gestionnaire audio
+    @State private var isFadingOut: Bool = false // Indicateur de fondu sonore
 
     var body: some View {
         NavigationView {
@@ -60,6 +64,7 @@ struct ContentView: View {
                                                 shadowRadius = 20
                                             }
                                             startTimer()
+                                            playMusic() // Démarre la musique
                                         }
                                 }
                                 .disabled(boosterAvailableIn > 0)
@@ -86,8 +91,6 @@ struct ContentView: View {
                                     ), lineWidth: 2)
 
                                 VStack(spacing: 4) {
-                
-
                                     HStack {
                                         ProgressView(value: 1 - (boosterAvailableIn / (1 * 3600)))
                                             .progressViewStyle(LinearProgressViewStyle(tint: .white))
@@ -169,6 +172,42 @@ struct ContentView: View {
                 boosterAvailableIn -= 1
             } else {
                 timer?.invalidate()
+            }
+        }
+    }
+
+    // Jouer une musique avec fondu
+    func playMusic() {
+        guard let path = Bundle.main.path(forResource: "background_music", ofType: "mp3") else { return }
+        let url = URL(fileURLWithPath: path)
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.numberOfLoops = -1
+            audioPlayer?.volume = 1
+            audioPlayer?.play()
+            // Animation de volume pour le fondu
+            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+                if let player = audioPlayer, player.volume < 1.0 {
+                    player.volume += 0.1
+                } else {
+                    timer.invalidate()
+                }
+            }
+        } catch {
+            print("Erreur lors de la lecture de la musique : \(error.localizedDescription)")
+        }
+    }
+
+    // Fondu sonore pour arrêter la musique
+    func stopMusic() {
+        isFadingOut = true
+        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+            if let player = audioPlayer, player.volume > 0 {
+                player.volume -= 0.1
+            } else {
+                timer.invalidate()
+                audioPlayer?.stop()
+                isFadingOut = false
             }
         }
     }

@@ -14,7 +14,7 @@ struct CollectionView: View {
                     // Titre et compteur de cartes
                     HStack {
                         Text("Votre Collection")
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .font(.system(size: 28, weight: .bold, design: .default))
                             .foregroundColor(.white)
                             .padding(.top, 20)
 
@@ -22,7 +22,7 @@ struct CollectionView: View {
 
                         // Affiche le compteur de cartes collectées
                         Text("\(collectionManager.cards.count)/150")
-                            .font(.system(size: 16, weight: .medium, design: .rounded))
+                            .font(.system(size: 16, weight: .medium, design: .default))
                             .foregroundColor(.white.opacity(0.7))
                             .padding(.top, 20)
                             .padding(.trailing, 16)
