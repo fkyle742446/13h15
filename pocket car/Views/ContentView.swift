@@ -9,28 +9,32 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                // En-tête stylisé
-                HStack {
-                    Spacer()
-                    Image("user_profile")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 80, height: 80)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white.opacity(0.5), lineWidth: 2))
-                    Spacer()
-                }
-                .padding(.top, 20)
+            ZStack {
+                // Fond couvrant tout l'écran
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.2)]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
 
-                // Zone principale des boosters
-                VStack(spacing: 20) {
-                    Text("Booster Mythics 151")
-                        .font(.largeTitle)
-                        .foregroundColor(.white)
+                VStack(spacing: 90) {
+                    // En-tête stylisé
+                    HStack {
+                        Spacer()
+                        Image("user_profile")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 80, height: 80)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(Color.white.opacity(0.5), lineWidth: 2))
+                        Spacer()
+                    }
+                    .padding(.top, 20)
 
+                    // Bloc principal des boosters avec le timer superposé
                     ZStack {
-                        // Fond décoratif
+                        // Bloc des boosters
                         RoundedRectangle(cornerRadius: 30)
                             .fill(LinearGradient(
                                 gradient: Gradient(colors: [Color.blue.opacity(0.2), Color.purple.opacity(0.4)]),
@@ -40,116 +44,122 @@ struct ContentView: View {
                             .frame(height: 250)
                             .shadow(color: .purple.opacity(0.3), radius: 10, x: 0, y: 5)
 
-                     HStack(spacing: 20) {
+                        HStack(spacing: 20) {
                             ForEach(0..<3, id: \.self) { index in
-                                VStack {
-                                    NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager)) {
-                                        Image("booster_closed")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 100, height: 150)
-                                            .shadow(color: Color.black.opacity(0.3), radius: shadowRadius, x: 0, y: 5)
-                                            .offset(y: floatingOffset)
-                                            .onAppear {
-                                                // Animation de flottement
-                                                withAnimation(Animation.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
-                                                    floatingOffset = -5
-                                                    shadowRadius = 20
-                                                }
-                                                startTimer()
+                                NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager)) {
+                                    Image("booster_closed")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 100, height: 150)
+                                        .shadow(color: Color.black.opacity(0.3), radius: shadowRadius, x: 0, y: 5)
+                                        .offset(y: floatingOffset)
+                                        .onAppear {
+                                            // Animation de flottement
+                                            withAnimation(Animation.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
+                                                floatingOffset = -5
+                                                shadowRadius = 20
                                             }
-                                    }
-                                    .disabled(boosterAvailableIn > 0)
-                                    Text("Disponible")
-                                        .font(.footnote)
-                                        .foregroundColor(.white)
+                                            startTimer()
+                                        }
                                 }
+                                .disabled(boosterAvailableIn > 0)
                             }
                         }
                         .padding(.horizontal, 20)
-                    }
-                }
 
-                // Jauge du temps restant
-                if boosterAvailableIn > 0 {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(LinearGradient(
-                                gradient: Gradient(colors: [Color.purple.opacity(0.3), Color.blue.opacity(0.2)]),
-                                startPoint: .top,
-                                endPoint: .bottom
-                            ))
-                            .shadow(color: .purple.opacity(0.4), radius: 10, x: 0, y: 5)
+                        // Timer superposé
+                        if boosterAvailableIn > 0 {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 15)
+                                    .fill(LinearGradient(
+                                        gradient: Gradient(colors: [Color.purple.opacity(0.3), Color.blue.opacity(0.2)]),
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    ))
+                                    .shadow(color: .purple.opacity(0.4), radius: 10, x: 0, y: 5)
 
-                        RoundedRectangle(cornerRadius: 15)
-                            .stroke(LinearGradient(
-                                gradient: Gradient(colors: [Color.white.opacity(0.5), Color.purple]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ), lineWidth: 2)
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(LinearGradient(
+                                        gradient: Gradient(colors: [Color.white.opacity(0.5), Color.purple]),
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ), lineWidth: 2)
 
-                        VStack(spacing: 4) {
-                            Text("Prochain booster gratuit dans:")
-                                .font(.body)
-                                .foregroundColor(.white.opacity(0.8))
+                                VStack(spacing: 4) {
+                                    Text("Prochain booster gratuit dans:")
+                                        .font(.body)
+                                        .foregroundColor(.white.opacity(0.8))
 
-                            HStack {
-                                ProgressView(value: 1 - (boosterAvailableIn / (1 * 3600)))
-                                    .progressViewStyle(LinearProgressViewStyle(tint: .white))
-                                    .frame(height: 8)
-                                Text(timeRemainingString())
-                                    .font(.footnote)
-                                    .foregroundColor(.white)
-                                    .padding(.leading, 5)
+                                    HStack {
+                                        ProgressView(value: 1 - (boosterAvailableIn / (1 * 3600)))
+                                            .progressViewStyle(LinearProgressViewStyle(tint: .white))
+                                            .frame(height: 8)
+                                        Text(timeRemainingString())
+                                            .font(.footnote)
+                                            .foregroundColor(.white)
+                                            .padding(.leading, 5)
+                                    }
+                                    .padding(.horizontal, 10)
+                                }
+                                .padding(8)
                             }
-                            .padding(.horizontal, 10)
-                        }
-                        .padding(8)
-                    }
-                    .frame(width: 320, height: 80)
-                }
-
-                // Accès à la collection
-                NavigationLink(destination: CollectionView(collectionManager: collectionManager)) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(LinearGradient(
-                                gradient: Gradient(colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.5)]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ))
-                            .shadow(color: .purple.opacity(0.4), radius: 8, x: 0, y: 4)
-
-                        RoundedRectangle(cornerRadius: 15)
-                            .stroke(LinearGradient(
-                                gradient: Gradient(colors: [Color.white.opacity(0.5), Color.purple]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ), lineWidth: 2)
-
-                        HStack(spacing: 10) {
-                            Image(systemName: "tray.full.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
+                            .frame(width: 320, height: 80)
+                            .offset(y: -170) // Positionnement du timer au-dessus des boosters
+                        } else {
+                            Text("Booster disponible !")
+                                .font(.headline)
                                 .foregroundColor(.white)
-                            Text("Collection")
-                                .font(.title3)
-                                .foregroundColor(.white)
+                                .padding()
+                                .background(
+                                    RoundedRectangle(cornerRadius: 15)
+                                        .fill(LinearGradient(
+                                            gradient: Gradient(colors: [Color.green.opacity(0.3), Color.green.opacity(0.5)]),
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        ))
+                                        .shadow(color: .green.opacity(0.4), radius: 10, x: 0, y: 5)
+                                )
+                                .frame(width: 320, height: 80)
+                                .offset(y: -170) // Positionnement du message au-dessus des boosters
                         }
-                        .padding(.horizontal, 12)
                     }
-                    .frame(width: 220, height: 70)
+
+                    // Accès à la collection
+                    NavigationLink(destination: CollectionView(collectionManager: collectionManager)) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(LinearGradient(
+                                    gradient: Gradient(colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.5)]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
+                                .shadow(color: .purple.opacity(0.4), radius: 8, x: 0, y: 4)
+
+                            RoundedRectangle(cornerRadius: 15)
+                                .stroke(LinearGradient(
+                                    gradient: Gradient(colors: [Color.white.opacity(0.5), Color.purple]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ), lineWidth: 2)
+
+                            HStack(spacing: 10) {
+                                Image(systemName: "tray.full.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
+                                    .foregroundColor(.white)
+                                Text("Collection")
+                                    .font(.title3)
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.horizontal, 12)
+                        }
+                        .frame(width: 220, height: 70)
+                    }
                 }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 10)
-            .background(LinearGradient(
-                gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.2)]),
-                startPoint: .top,
-                endPoint: .bottom
-            ))
-            .ignoresSafeArea()
         }
     }
 
@@ -176,5 +186,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-
 
