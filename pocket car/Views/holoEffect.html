@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holographic Card</title>
+    <style>
+        /* Place all your CSS code here */
+        :root {
+            --color1: rgb(0, 231, 255);
+            --color2: rgb(255, 0, 231);
+        }
+        .card {
+            width: 200px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            background: url(https://cdn2.bulbagarden.net/upload/1/17/Cardback.jpg);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        .card:before, .card:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            mix-blend-mode: color-dodge;
+            opacity: 0.75;
+            background: linear-gradient(135deg, var(--color1), var(--color2));
+            animation: gradient 5s infinite linear;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card"></div>
+</body>
+</html>
+
