@@ -11,10 +11,22 @@ struct CollectionView: View {
                     .ignoresSafeArea()
 
                 VStack(spacing: 16) {
-                    Text("Votre Collection")
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
-                        .padding(.top, 20)
+                    // Titre et compteur de cartes
+                    HStack {
+                        Text("Votre Collection")
+                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .foregroundColor(.white)
+                            .padding(.top, 20)
+
+                        Spacer()
+
+                        // Affiche le compteur de cartes collectées
+                        Text("\(collectionManager.cards.count)/150")
+                            .font(.system(size: 16, weight: .medium, design: .rounded))
+                            .foregroundColor(.white.opacity(0.7))
+                            .padding(.top, 20)
+                            .padding(.trailing, 16)
+                    }
 
                     if collectionManager.cards.isEmpty {
                         EmptyCollectionView()
