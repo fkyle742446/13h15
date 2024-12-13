@@ -1,4 +1,14 @@
-// Supprimez la déclaration de BoosterCard
-import SwiftUI
-// BoosterCard et CardRarity sont définis dans Models.swift
 
+import Foundation
+
+enum CardRarity {
+    case common
+    case rare
+    case legendary
+}
+
+struct BoosterCard: Identifiable {
+    let id = UUID()
+    let name: String
+    let rarity: CardRarity
+}

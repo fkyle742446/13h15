@@ -1,19 +1,19 @@
 import SwiftUI
 
 class CollectionManager: ObservableObject {
-    @Published var cards: [BoosterCard] = [
-        BoosterCard(name: "Card1", rarity: .common),
-        BoosterCard(name: "Card2", rarity: .rare),
-        BoosterCard(name: "Card3", rarity: .legendary),
-        BoosterCard(name: "Card4", rarity: .common),
-        BoosterCard(name: "Card5", rarity: .rare),
-        BoosterCard(name: "Card6", rarity: .legendary)
-    ]
+    // Un tableau contenant chaque carte et sa quantité
+    @Published var cards: [(card: BoosterCard, count: Int)] = []
 
     // Ajoute une carte à la collection
     func addCard(_ card: BoosterCard) {
         DispatchQueue.main.async {
-            self.cards.append(card)
+            if let index = self.cards.firstIndex(where: { $0.card.name == card.name && $0.card.rarity == card.rarity }) {
+                // Si la carte existe déjà, incrémentez la quantité
+                self.cards[index].count += 1
+            } else {
+                // Sinon, ajoutez une nouvelle entrée
+                self.cards.append((card: card, count: 1))
+            }
         }
     }
 }
