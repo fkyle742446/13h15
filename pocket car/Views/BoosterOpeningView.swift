@@ -205,89 +205,91 @@ struct BoosterOpeningView: View {
                     if currentCardIndex < 5 { // Exemple : 5 cartes par booster
                         let selectedCard = randomCard()
 
-                        ZStack {
-                            // Halo effect
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(haloColor(for: selectedCard.rarity))
-                                .blur(radius: 20)
-                                .frame(width: 240, height: 340)
-                                .opacity(0.7)
-                                .scaleEffect(cardScale)
-                                .offset(y: cardOffset + dragOffset)
-                            
-                            HolographicCard(cardImage: selectedCard.name)
-                                .scaleEffect(cardScale)
-                                .offset(y: cardOffset + dragOffset)
-                                .modifier(AutoHolographicAnimation())
-                                .gesture(
-                                    DragGesture()
-                                        .onChanged { gesture in
-                                            let translation = gesture.translation.height
-                                            if translation < 0 { // Only allow upward swipes
-                                                dragOffset = translation
-                                                showArrowIndicator = false
-                                            }
-                                        }
-                                        .onEnded { gesture in
-                                            if dragOffset < -100 { // Threshold for card switch
-                                                withAnimation(.easeInOut(duration: 0.3)) {
-                                                    cardOffset = -UIScreen.main.bounds.height
+                        VStack(spacing: 50) {
+                            ZStack {
+                                // Halo effect
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(haloColor(for: selectedCard.rarity))
+                                    .blur(radius: 20)
+                                    .frame(width: 240, height: 340)
+                                    .opacity(0.7)
+                                    .scaleEffect(cardScale)
+                                    .offset(y: cardOffset + dragOffset)
+                                
+                                HolographicCard(cardImage: selectedCard.name)
+                                    .scaleEffect(cardScale)
+                                    .offset(y: cardOffset + dragOffset)
+                                    .modifier(AutoHolographicAnimation())
+                                    .gesture(
+                                        DragGesture()
+                                            .onChanged { gesture in
+                                                let translation = gesture.translation.height
+                                                if translation < 0 { // Only allow upward swipes
+                                                    dragOffset = translation
+                                                    showArrowIndicator = false
                                                 }
-                                                collectionManager.addCard(selectedCard)
-                                                
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                                    cardOffset = 0
-                                                    currentCardIndex += 1
-                                                    dragOffset = 0
-                                                    showParticles = true
-                                                    showArrowIndicator = true
-                                                    // Play sound for next card
-                                                    if currentCardIndex < 5 {
-                                                        SoundManager.shared.playSound(for: randomCard().rarity)
+                                            }
+                                            .onEnded { gesture in
+                                                if dragOffset < -100 { // Threshold for card switch
+                                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                                        cardOffset = -UIScreen.main.bounds.height
+                                                    }
+                                                    collectionManager.addCard(selectedCard)
+                                                    
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                                        cardOffset = 0
+                                                        currentCardIndex += 1
+                                                        dragOffset = 0
+                                                        showParticles = true
+                                                        showArrowIndicator = true
+                                                        // Play sound for next card
+                                                        if currentCardIndex < 5 {
+                                                            SoundManager.shared.playSound(for: randomCard().rarity)
+                                                        }
+                                                    }
+                                                } else {
+                                                    withAnimation {
+                                                        dragOffset = 0
+                                                        showArrowIndicator = true
                                                     }
                                                 }
-                                            } else {
-                                                withAnimation {
-                                                    dragOffset = 0
-                                                    showArrowIndicator = true
-                                                }
+                                            }
+                                    )
+                                    .onTapGesture {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            cardOffset = -UIScreen.main.bounds.height
+                                        }
+                                        collectionManager.addCard(selectedCard)
+                                        
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            cardOffset = 0
+                                            currentCardIndex += 1
+                                            dragOffset = 0
+                                            showParticles = true
+                                            showArrowIndicator = true
+                                            // Play sound for next card
+                                            if currentCardIndex < 5 {
+                                                SoundManager.shared.playSound(for: randomCard().rarity)
                                             }
                                         }
-                                )
-                                .onTapGesture {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        cardOffset = -UIScreen.main.bounds.height
                                     }
-                                    collectionManager.addCard(selectedCard)
-                                    
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                        cardOffset = 0
-                                        currentCardIndex += 1
-                                        dragOffset = 0
-                                        showParticles = true
-                                        showArrowIndicator = true
-                                        // Play sound for next card
-                                        if currentCardIndex < 5 {
-                                            SoundManager.shared.playSound(for: randomCard().rarity)
+                                    .onAppear {
+                                        withAnimation(.easeOut(duration: 0.3)) {
+                                            cardScale = 1.3
+                                            showParticles = true
                                         }
+                                        // Play sound when card appears
+                                        SoundManager.shared.playSound(for: selectedCard.rarity)
                                     }
-                                }
-                                .onAppear {
-                                    withAnimation(.easeOut(duration: 0.3)) {
-                                        cardScale = 1.3
-                                        showParticles = true
-                                    }
-                                    // Play sound when card appears
-                                    SoundManager.shared.playSound(for: selectedCard.rarity)
-                                }
+                            }
+                            
+                            // Stars moved down with more padding
+                            Text(getRarityStars(for: selectedCard.rarity))
+                                .font(.system(size: 24, weight: .bold, design: .rounded))
+                                .foregroundColor(haloColor(for: selectedCard.rarity))
+                                .opacity(0.8)
+                                .padding(.top, 40)
                         }
-                        
-                        // Rarity text below card
-                        Text(selectedCard.rarity.rawValue.uppercased())
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
-                            .foregroundColor(haloColor(for: selectedCard.rarity))
-                            .padding(.top, 20)
-                            .opacity(0.8)
                     } else {
                         Text("")
                             .font(.title)
@@ -307,18 +309,25 @@ struct BoosterOpeningView: View {
     // Fonction pour tirer une carte aléatoire
     func randomCard() -> BoosterCard {
         let probabilities: [CardRarity: Double] = [
-            .common: 0.7,
-            .rare: 0.25,
-            .legendary: 0.05
+            .common: 0.50,    // 50%
+            .rare: 0.30,      // 30%
+            .epic: 0.15,      // 15% (was missing)
+            .legendary: 0.05  // 5%
         ]
 
-        let weightedCards = allCards.flatMap { card -> [BoosterCard] in
-            let weight = probabilities[card.rarity] ?? 0
-            let count = Int(weight * 100)
-            return Array(repeating: card, count: count)
+        let random = Double.random(in: 0...1)
+        var cumulativeProbability = 0.0
+        
+        for (rarity, probability) in probabilities {
+            cumulativeProbability += probability
+            if random <= cumulativeProbability {
+                // Filter cards by selected rarity and choose random one
+                let cardsOfRarity = allCards.filter { $0.rarity == rarity }
+                return cardsOfRarity.randomElement() ?? allCards.first!
+            }
         }
-
-        return weightedCards.randomElement() ?? allCards.first!
+        
+        return allCards.first! // Fallback to first card (shouldn't happen)
     }
 
     // Add this function to your view struct
@@ -332,6 +341,20 @@ struct BoosterOpeningView: View {
             return Color.purple
         case .legendary:
             return Color(red: 1, green: 0.84, blue: 0) // Golden color
+        }
+    }
+
+    // Add this helper function to the view struct
+    private func getRarityStars(for rarity: CardRarity) -> String {
+        switch rarity {
+        case .common:
+            return ""
+        case .rare:
+            return ""
+        case .epic:
+            return ""
+        case .legendary:
+            return ""
         }
     }
 }
