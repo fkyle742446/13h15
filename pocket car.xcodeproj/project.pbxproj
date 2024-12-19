@@ -53,17 +53,9 @@
 		17A641662D145A7700042ADE /* Exceptions for "pocket car" folder in "pocket carTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Sounds/Background.mp3,
 				StoreManager.swift,
 			);
 			target = 176C374A2D05FE2E0018198C /* pocket carTests */;
-		};
-		17A641672D145A7700042ADE /* Exceptions for "pocket car" folder in "pocket carUITests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Sounds/Background.mp3,
-			);
-			target = 176C37542D05FE2E0018198C /* pocket carUITests */;
 		};
 		17F16D402D149A0C00AE3FB3 /* Exceptions for "pocket car" folder in "pocket car" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -80,7 +72,6 @@
 			exceptions = (
 				17F16D402D149A0C00AE3FB3 /* Exceptions for "pocket car" folder in "pocket car" target */,
 				17A641662D145A7700042ADE /* Exceptions for "pocket car" folder in "pocket carTests" target */,
-				17A641672D145A7700042ADE /* Exceptions for "pocket car" folder in "pocket carUITests" target */,
 			);
 			path = "pocket car";
 			sourceTree = "<group>";

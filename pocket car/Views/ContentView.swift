@@ -5,7 +5,7 @@ struct ContentView: View {
     @StateObject var collectionManager = CollectionManager()
     @State private var floatingOffset: CGFloat = 0
     @State private var shadowRadius: CGFloat = 15
-    @State private var boosterAvailableIn: TimeInterval = 1 * 3 // 3 seconds for testing
+    @State private var boosterAvailableIn: TimeInterval = 1 * 6 // 3 seconds for testing
     @State private var timer: Timer? = nil
     
     @State private var audioPlayer: AVAudioPlayer?
