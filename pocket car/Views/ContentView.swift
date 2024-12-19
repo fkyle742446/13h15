@@ -2,176 +2,157 @@ import SwiftUI
 import AVFoundation
 
 struct ContentView: View {
-    @StateObject var collectionManager = CollectionManager() // Instance partagée
-    @State private var floatingOffset: CGFloat = 0 // Offset pour le flottement
-    @State private var shadowRadius: CGFloat = 15 // Rayon de l'ombre
-    @State private var boosterAvailableIn: TimeInterval = 1 * 3 // Temps d'attente en secondes (1 heure)
+    @StateObject var collectionManager = CollectionManager()
+    @State private var floatingOffset: CGFloat = 0
+    @State private var shadowRadius: CGFloat = 15
+    @State private var boosterAvailableIn: TimeInterval = 1 * 3 // 3 seconds for testing
     @State private var timer: Timer? = nil
     
-    @State private var audioPlayer: AVAudioPlayer? // Gestionnaire audio
-    @State private var isFadingOut: Bool = false // Indicateur de fondu sonore
-
+    @State private var audioPlayer: AVAudioPlayer?
+    @State private var isFadingOut: Bool = false
+    
     var body: some View {
         NavigationView {
             ZStack {
-                // Fond couvrant tout l'écran
+                // Background gradient
                 LinearGradient(
-                    gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.2)]),
+                    gradient: Gradient(colors: [.white, Color(.systemGray6)]),
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .ignoresSafeArea()
 
-                VStack(spacing: 170) {
-                    // En-tête stylisé
-                    HStack {
-                        Spacer()
-                        Image("user_profile")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 80, height: 80)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.white.opacity(0.5), lineWidth: 2))
-                        Spacer()
-                    }
-                    .padding(.top, 20)
+                VStack(spacing: 25) {
+                    // Single profile image
+                    Image("user_profile")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 60, height: 60)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                        .shadow(color: .gray.opacity(0.2), radius: 5)
+                        .padding(.top, 20)
 
-                    // Bloc principal des boosters avec le timer superposé
+                    // Boosters section
                     ZStack {
-                        // Bloc des boosters
-                        RoundedRectangle(cornerRadius: 30)
-                            .fill(LinearGradient(
-                                gradient: Gradient(colors: [Color.blue.opacity(0.2), Color.purple.opacity(0.4)]),
-                                startPoint: .top,
-                                endPoint: .bottom
-                            ))
-                            .frame(height: 250)
-                            .shadow(color: .purple.opacity(0.3), radius: 10, x: 0, y: 5)
-
-                        HStack(spacing: 20) {
-                            ForEach(0..<3, id: \.self) { index in
-                                NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager)) {
-                                    Image("booster_closed")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 100, height: 150)
-                                        .shadow(color: Color.black.opacity(0.3), radius: shadowRadius, x: 0, y: 5)
-                                        .offset(y: floatingOffset)
-                                        .onAppear {
-                                            // Animation de flottement
-                                            withAnimation(Animation.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
-                                                floatingOffset = -5
-                                                shadowRadius = 20
-                                            }
-                                            startTimer()
-                                            playMusic() // Démarre la musique
-                                        }
-                                }
-                                .disabled(boosterAvailableIn > 0)
-                            }
-                        }
-                        .padding(.horizontal, 20)
-
-                        // Timer superposé
-                        if boosterAvailableIn > 0 {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 15)
-                                    .fill(LinearGradient(
-                                        gradient: Gradient(colors: [Color.purple.opacity(0.3), Color.blue.opacity(0.2)]),
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    ))
-                                    .shadow(color: .purple.opacity(0.4), radius: 10, x: 0, y: 5)
-
-                                RoundedRectangle(cornerRadius: 15)
-                                    .stroke(LinearGradient(
-                                        gradient: Gradient(colors: [Color.white.opacity(0.5), Color.purple]),
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    ), lineWidth: 2)
-
-                                VStack(spacing: 4) {
-                                    HStack {
-                                        ProgressView(value: 1 - (boosterAvailableIn / (1 * 3600)))
-                                            .progressViewStyle(LinearProgressViewStyle(tint: .white))
-                                            .frame(height: 8)
-                                        Text(timeRemainingString())
-                                            .font(.footnote)
-                                            .foregroundColor(.white)
-                                            .padding(.leading, 5)
+                        RoundedRectangle(cornerRadius: 25)
+                            .fill(Color("mint").opacity(0.2))
+                            .frame(height: 280)
+                        
+                        VStack(spacing: 15) {
+                            HStack(spacing: 20) {
+                                ForEach(0..<2) { index in
+                                    NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager)) {
+                                        Image("booster_closed")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(height: 200)
+                                            .shadow(color: .gray.opacity(0.3), radius: 8)
                                     }
-                                    .padding(.horizontal, 10)
+                                    .disabled(boosterAvailableIn > 0)
                                 }
-                                .padding(8)
                             }
-                            .frame(width: 150, height: 8)
-                            .offset(y: 130) // Positionnement du timer au-dessus des boosters
-                        } else {
-                            Text("Click on a Booster")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding()
+                            
+                            // Timer display
+                            if boosterAvailableIn > 0 {
+                                HStack {
+                                    Image(systemName: "clock")
+                                        .foregroundColor(.gray)
+                                    Text(timeRemainingString())
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 15)
                                 .background(
-                                    RoundedRectangle(cornerRadius: 15)
-                                        .fill(LinearGradient(
-                                            gradient: Gradient(colors: [Color.green.opacity(0.3), Color.green.opacity(0.5)]),
-                                            startPoint: .top,
-                                            endPoint: .bottom
-                                        ))
-                                        .shadow(color: .green.opacity(1), radius: 10, x: 0, y: 5)
+                                    Capsule()
+                                        .fill(Color.white)
+                                        .shadow(color: .gray.opacity(0.2), radius: 4)
                                 )
-                                .frame(width: 320, height: 90)
-                                .offset(y: 130) // Positionnement du message au-dessus des boosters
-                        }
-                    }
-
-                    // Accès à la collection
-                    NavigationLink(destination: CollectionView(collectionManager: collectionManager)) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 15)
-                                .fill(LinearGradient(
-                                    gradient: Gradient(colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.5)]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ))
-                                .shadow(color: .purple.opacity(0.4), radius: 8, x: 0, y: 4)
-
-                            RoundedRectangle(cornerRadius: 15)
-                                .stroke(LinearGradient(
-                                    gradient: Gradient(colors: [Color.white.opacity(0.5), Color.purple]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ), lineWidth: 2)
-
-                            HStack(spacing: 10) {
-                                Image(systemName: "tray.full.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 24, height: 24)
-                                    .foregroundColor(.white)
-                                Text("Collection")
-                                    .font(.title3)
-                                    .foregroundColor(.white)
                             }
-                            .padding(.horizontal, 12)
                         }
-                        .frame(width: 220, height: 70)
                     }
+                    .padding(.horizontal)
+
+                    Spacer() // Push the buttons down
+
+                    // Collection and Shop buttons
+                    HStack(spacing: 20) {
+                        NavigationLink(destination: CollectionView(collectionManager: collectionManager)) {
+                            VStack {
+                                Image(systemName: "rectangle.stack.fill")
+                                    .font(.system(size: 30))
+                                Text("Collection")
+                                    .font(.system(size: 14, weight: .medium))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color.orange.opacity(0.1))
+                            )
+                        }
+                        
+                        NavigationLink(destination: Text("Shop")) {
+                            VStack {
+                                Image(systemName: "bag.fill")
+                                    .font(.system(size: 30))
+                                Text("Shop")
+                                    .font(.system(size: 14, weight: .medium))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color.blue.opacity(0.1))
+                            )
+                        }
+                    }
+                    .foregroundColor(.gray)
+                    .padding(.horizontal)
+                    .padding(.bottom, 30) // Add bottom padding
+
+                    // Bottom progress bar
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text("Register 150 cards in collection")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.gray)
+                        
+                        GeometryReader { geometry in
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.gray.opacity(0.1))
+                                
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color("mint"))
+                                    .frame(width: geometry.size.width * CGFloat(collectionManager.cards.count) / 150.0)
+                            }
+                            .frame(height: 8)
+                        }
+                        .frame(height: 8)
+                    }
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.white)
+                            .shadow(color: .gray.opacity(0.1), radius: 5)
+                    )
+                    .padding(.horizontal)
+                    .padding(.bottom, 20)
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
             }
         }
         .onAppear {
+            startTimer()
             playMusic()
         }
         .onDisappear {
             stopMusic()
         }
     }
-
-    // Timer
-    func startTimer() {
+    
+    // Timer functionality
+    private func startTimer() {
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             if boosterAvailableIn > 0 {
@@ -181,9 +162,16 @@ struct ContentView: View {
             }
         }
     }
-
-    // Jouer une musique avec fondu
-    func playMusic() {
+    
+    private func timeRemainingString() -> String {
+        let hours = Int(boosterAvailableIn) / 3600
+        let minutes = (Int(boosterAvailableIn) % 3600) / 60
+        let seconds = Int(boosterAvailableIn) % 60
+        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    }
+    
+    // Add these functions inside ContentView struct
+    private func playMusic() {
         guard let path = Bundle.main.path(forResource: "Background", ofType: "mp3") else {
             print("Could not find Background.mp3")
             return
@@ -209,8 +197,8 @@ struct ContentView: View {
         }
     }
 
-    // Fondu sonore pour arrêter la musique
-    func stopMusic() {
+    private func stopMusic() {
+        // Fade out the music
         isFadingOut = true
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
             if let player = audioPlayer, player.volume > 0 {
@@ -222,17 +210,11 @@ struct ContentView: View {
             }
         }
     }
-
-    // Temps restant
-    func timeRemainingString() -> String {
-        let hours = Int(boosterAvailableIn) / 3600
-        let minutes = (Int(boosterAvailableIn) % 3600) / 60
-        return "\(hours)h \(minutes)m"
-    }
 }
 
 #Preview {
     ContentView()
 }
+
 
 
