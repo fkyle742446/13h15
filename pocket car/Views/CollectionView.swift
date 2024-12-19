@@ -83,17 +83,36 @@ struct CardView: View {
     let card: BoosterCard
     let count: Int
 
+    private func haloColor(for rarity: CardRarity) -> Color {
+        switch rarity {
+        case .common:
+            return Color.white
+        case .rare:
+            return Color.blue
+        case .epic:
+            return Color.purple
+        case .legendary:
+            return Color(red: 1, green: 0.84, blue: 0)
+        }
+    }
+
     var body: some View {
         VStack {
             ZStack(alignment: .topTrailing) {
+                // Halo effect
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(haloColor(for: card.rarity))
+                    .blur(radius: 15)
+                    .frame(maxWidth: 110, maxHeight: 150)
+                    .opacity(0.7)
+                
                 Image(card.name)
                     .resizable()
-                    .aspectRatio(3 / 4, contentMode: .fit) // Maintient les proportions
-                    .frame(maxWidth: 100, maxHeight: 140) // Taille du conteneur
+                    .aspectRatio(3 / 4, contentMode: .fit)
+                    .frame(maxWidth: 100, maxHeight: 140)
                     .cornerRadius(12)
                     .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 4)
 
-                // Badge indiquant la quantité
                 if count > 1 {
                     Text("\(count)")
                         .font(.system(size: 12, weight: .bold))
@@ -123,6 +142,19 @@ struct CardView: View {
 struct ZoomedCardView: View {
     @Binding var selectedCard: BoosterCard?
 
+    private func haloColor(for rarity: CardRarity) -> Color {
+        switch rarity {
+        case .common:
+            return Color.white
+        case .rare:
+            return Color.blue
+        case .epic:
+            return Color.purple
+        case .legendary:
+            return Color(red: 1, green: 0.84, blue: 0)
+        }
+    }
+
     var body: some View {
         ZStack {
             Color.black.opacity(0.9).ignoresSafeArea()
@@ -133,11 +165,20 @@ struct ZoomedCardView: View {
                 }
 
             VStack(spacing: 20) {
-                HolographicCard(cardImage: selectedCard?.name ?? "")
-                    .scaledToFit()
-                    .frame(width: 300, height: 420)
-                    .cornerRadius(16)
-                    .shadow(color: .yellow.opacity(0.6), radius: 20, x: 0, y: 10)
+                ZStack {
+                    // Halo effect
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(haloColor(for: selectedCard?.rarity ?? .common))
+                        .blur(radius: 20)
+                        .frame(width: 320, height: 440)
+                        .opacity(0.7)
+                    
+                    HolographicCard(cardImage: selectedCard?.name ?? "")
+                        .scaledToFit()
+                        .frame(width: 300, height: 420)
+                        .cornerRadius(16)
+                }
+                .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
 
                 Text(selectedCard?.name ?? "")
                     .font(.system(size: 22, weight: .semibold, design: .rounded))
@@ -147,4 +188,6 @@ struct ZoomedCardView: View {
         .transition(.opacity)
     }
 }
+
+
 

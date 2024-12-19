@@ -162,6 +162,12 @@ struct ContentView: View {
                 .padding(.vertical, 10)
             }
         }
+        .onAppear {
+            playMusic()
+        }
+        .onDisappear {
+            stopMusic()
+        }
     }
 
     // Timer
@@ -178,23 +184,28 @@ struct ContentView: View {
 
     // Jouer une musique avec fondu
     func playMusic() {
-        guard let path = Bundle.main.path(forResource: "background_music", ofType: "mp3") else { return }
+        guard let path = Bundle.main.path(forResource: "Background", ofType: "mp3") else {
+            print("Could not find Background.mp3")
+            return
+        }
         let url = URL(fileURLWithPath: path)
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.numberOfLoops = -1
-            audioPlayer?.volume = 1
+            audioPlayer?.numberOfLoops = -1  // Loop indefinitely
+            audioPlayer?.volume = 0.5
             audioPlayer?.play()
-            // Animation de volume pour le fondu
+            
+            // Fade in
+            audioPlayer?.volume = 0
             Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
-                if let player = audioPlayer, player.volume < 1.0 {
+                if let player = audioPlayer, player.volume < 0.5 {
                     player.volume += 0.1
                 } else {
                     timer.invalidate()
                 }
             }
         } catch {
-            print("Erreur lors de la lecture de la musique : \(error.localizedDescription)")
+            print("Error playing music: \(error.localizedDescription)")
         }
     }
 
@@ -223,4 +234,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
 

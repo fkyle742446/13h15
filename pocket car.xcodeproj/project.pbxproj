@@ -50,11 +50,29 @@
 			);
 			target = 176C37542D05FE2E0018198C /* pocket carUITests */;
 		};
+		17A641662D145A7700042ADE /* Exceptions for "pocket car" folder in "pocket carTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Sounds/Background.mp3,
+			);
+			target = 176C374A2D05FE2E0018198C /* pocket carTests */;
+		};
+		17A641672D145A7700042ADE /* Exceptions for "pocket car" folder in "pocket carUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Sounds/Background.mp3,
+			);
+			target = 176C37542D05FE2E0018198C /* pocket carUITests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		176C373C2D05FE2D0018198C /* pocket car */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				17A641662D145A7700042ADE /* Exceptions for "pocket car" folder in "pocket carTests" target */,
+				17A641672D145A7700042ADE /* Exceptions for "pocket car" folder in "pocket carUITests" target */,
+			);
 			path = "pocket car";
 			sourceTree = "<group>";
 		};

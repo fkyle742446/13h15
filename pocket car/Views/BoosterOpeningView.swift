@@ -1,4 +1,51 @@
 import SwiftUI
+import AVFoundation
+
+class SoundManager {
+    static let shared = SoundManager()
+    private var audioPlayers: [URL: AVAudioPlayer] = [:]
+    
+    func playSound(for rarity: CardRarity) {
+        let soundName: String
+        let volume: Float
+        
+        switch rarity {
+        case .common:
+            soundName = "common_reveal"
+            volume = 0.5
+        case .rare:
+            soundName = "rare_reveal"
+            volume = 0.6
+        case .epic:
+            soundName = "epic_reveal"
+            volume = 0.7
+        case .legendary:
+            soundName = "legendary_reveal"
+            volume = 0.8
+        }
+        
+        guard let path = Bundle.main.path(forResource: soundName, ofType: "mp3") else {
+            print("Failed to find sound file: \(soundName)")
+            return
+        }
+        
+        let url = URL(fileURLWithPath: path)
+        
+        do {
+            let player = try AVAudioPlayer(contentsOf: url)
+            player.volume = volume
+            player.play()
+            audioPlayers[url] = player
+            
+            // Clean up after playing
+            DispatchQueue.main.asyncAfter(deadline: .now() + player.duration + 0.1) {
+                self.audioPlayers.removeValue(forKey: url)
+            }
+        } catch {
+            print("Failed to play sound: \(error.localizedDescription)")
+        }
+    }
+}
 
 struct BoosterOpeningView: View {
     @ObservedObject var collectionManager: CollectionManager
@@ -9,7 +56,11 @@ struct BoosterOpeningView: View {
     @State private var currentCardIndex = 0
     @State private var cardScale: CGFloat = 1.3
     @State private var cardOffset: CGFloat = 0
+    @State private var showParticles = false
     @Environment(\.presentationMode) var presentationMode
+
+    @State private var dragOffset: CGFloat = 0
+    @State private var showArrowIndicator = true
 
     let allCards: [BoosterCard] = [
             // Common (50%)
@@ -116,6 +167,20 @@ struct BoosterOpeningView: View {
             Color.black.opacity(0.9)
                 .ignoresSafeArea()
 
+            // Arrow indicator
+            if !isOpening && showArrowIndicator {
+                VStack {
+                    Image(systemName: "chevron.up")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.white.opacity(0.6))
+                        .opacity(1.0 - abs(dragOffset/100))
+                        .offset(y: -20)
+                        .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: dragOffset)
+                    Spacer()
+                }
+                .padding(.top, 40)
+            }
+
             VStack {
                 if isOpening {
                     // Booster fermé
@@ -140,28 +205,91 @@ struct BoosterOpeningView: View {
                     if currentCardIndex < 5 { // Exemple : 5 cartes par booster
                         let selectedCard = randomCard()
 
-                        HolographicCard(cardImage: selectedCard.name)
-                            .scaleEffect(cardScale)
-                            .offset(y: cardOffset)
-                            .onTapGesture {
-                                collectionManager.addCard(selectedCard)
-
-                                withAnimation(.easeInOut(duration: 0.4)) {
-                                    cardOffset = -UIScreen.main.bounds.height
+                        ZStack {
+                            // Halo effect
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(haloColor(for: selectedCard.rarity))
+                                .blur(radius: 20)
+                                .frame(width: 240, height: 340)
+                                .opacity(0.7)
+                                .scaleEffect(cardScale)
+                                .offset(y: cardOffset + dragOffset)
+                            
+                            HolographicCard(cardImage: selectedCard.name)
+                                .scaleEffect(cardScale)
+                                .offset(y: cardOffset + dragOffset)
+                                .modifier(AutoHolographicAnimation())
+                                .gesture(
+                                    DragGesture()
+                                        .onChanged { gesture in
+                                            let translation = gesture.translation.height
+                                            if translation < 0 { // Only allow upward swipes
+                                                dragOffset = translation
+                                                showArrowIndicator = false
+                                            }
+                                        }
+                                        .onEnded { gesture in
+                                            if dragOffset < -100 { // Threshold for card switch
+                                                withAnimation(.easeInOut(duration: 0.3)) {
+                                                    cardOffset = -UIScreen.main.bounds.height
+                                                }
+                                                collectionManager.addCard(selectedCard)
+                                                
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                                    cardOffset = 0
+                                                    currentCardIndex += 1
+                                                    dragOffset = 0
+                                                    showParticles = true
+                                                    showArrowIndicator = true
+                                                    // Play sound for next card
+                                                    if currentCardIndex < 5 {
+                                                        SoundManager.shared.playSound(for: randomCard().rarity)
+                                                    }
+                                                }
+                                            } else {
+                                                withAnimation {
+                                                    dragOffset = 0
+                                                    showArrowIndicator = true
+                                                }
+                                            }
+                                        }
+                                )
+                                .onTapGesture {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        cardOffset = -UIScreen.main.bounds.height
+                                    }
+                                    collectionManager.addCard(selectedCard)
+                                    
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                        cardOffset = 0
+                                        currentCardIndex += 1
+                                        dragOffset = 0
+                                        showParticles = true
+                                        showArrowIndicator = true
+                                        // Play sound for next card
+                                        if currentCardIndex < 5 {
+                                            SoundManager.shared.playSound(for: randomCard().rarity)
+                                        }
+                                    }
                                 }
-
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                                    cardOffset = 0
-                                    currentCardIndex += 1
+                                .onAppear {
+                                    withAnimation(.easeOut(duration: 0.3)) {
+                                        cardScale = 1.3
+                                        showParticles = true
+                                    }
+                                    // Play sound when card appears
+                                    SoundManager.shared.playSound(for: selectedCard.rarity)
                                 }
-                            }
-                            .onAppear {
-                                withAnimation(.easeOut(duration: 0.3)) {
-                                    cardScale = 1.3
-                                }
-                            }
+                        }
+                        
+                        // Rarity text below card
+                        Text(selectedCard.rarity.rawValue.uppercased())
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .foregroundColor(haloColor(for: selectedCard.rarity))
+                            .padding(.top, 20)
+                            .opacity(0.8)
                     } else {
-                        Text("Ouverture terminée")
+                        Text("")
                             .font(.title)
                             .foregroundColor(.white)
                             .padding()
@@ -192,4 +320,47 @@ struct BoosterOpeningView: View {
 
         return weightedCards.randomElement() ?? allCards.first!
     }
+
+    // Add this function to your view struct
+    private func haloColor(for rarity: CardRarity) -> Color {
+        switch rarity {
+        case .common:
+            return Color.white
+        case .rare:
+            return Color.blue
+        case .epic:
+            return Color.purple
+        case .legendary:
+            return Color(red: 1, green: 0.84, blue: 0) // Golden color
+        }
+    }
 }
+
+struct AutoHolographicAnimation: ViewModifier {
+    @State private var isAnimating = false
+    
+    func body(content: Content) -> some View {
+        content
+            .rotation3DEffect(
+                .degrees(isAnimating ? 5 : -5),
+                axis: (x: 0.0, y: 1.0, z: 0.0)
+            )
+            .onAppear {
+                withAnimation(
+                    Animation
+                        .easeInOut(duration: 1.5)
+                        .repeatForever(autoreverses: true)
+                ) {
+                    isAnimating = true
+                }
+            }
+    }
+}
+
+
+
+
+
+
+
+
