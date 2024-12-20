@@ -15,13 +15,13 @@ class SoundManager {
             volume = 0.5
         case .rare:
             soundName = "rare_reveal"
-            volume = 0.6
+            volume = 0.5
         case .epic:
             soundName = "epic_reveal"
-            volume = 0.7
+            volume = 0.5
         case .legendary:
             soundName = "legendary_reveal"
-            volume = 0.8
+            volume = 0.7
         }
         
         guard let path = Bundle.main.path(forResource: soundName, ofType: "mp3") else {
