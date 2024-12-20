@@ -12,16 +12,16 @@ class SoundManager {
         switch rarity {
         case .common:
             soundName = "common_reveal"
-            volume = 0.5
+            volume = 0.7
         case .rare:
             soundName = "rare_reveal"
-            volume = 0.6
+            volume = 0.7
         case .epic:
             soundName = "epic_reveal"
             volume = 0.7
         case .legendary:
             soundName = "legendary_reveal"
-            volume = 0.8
+            volume = 0.7
         }
         
         guard let path = Bundle.main.path(forResource: soundName, ofType: "mp3") else {
@@ -31,15 +31,44 @@ class SoundManager {
         
         let url = URL(fileURLWithPath: path)
         
+        // Fade out existing sound if any
+        if let existingPlayer = audioPlayers[url] {
+            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+                if existingPlayer.volume > 0 {
+                    existingPlayer.volume -= 0.1
+                } else {
+                    timer.invalidate()
+                    existingPlayer.stop()
+                    self.audioPlayers.removeValue(forKey: url)
+                }
+            }
+        }
+        
         do {
             let player = try AVAudioPlayer(contentsOf: url)
-            player.volume = volume
+            player.volume = 0 // Start at 0 volume
             player.play()
             audioPlayers[url] = player
             
+            // Fade in
+            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+                if player.volume < volume {
+                    player.volume += 0.1
+                } else {
+                    timer.invalidate()
+                }
+            }
+            
             // Clean up after playing
             DispatchQueue.main.asyncAfter(deadline: .now() + player.duration + 0.1) {
-                self.audioPlayers.removeValue(forKey: url)
+                Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+                    if player.volume > 0 {
+                        player.volume -= 0.1
+                    } else {
+                        timer.invalidate()
+                        self.audioPlayers.removeValue(forKey: url)
+                    }
+                }
             }
         } catch {
             print("Failed to play sound: \(error.localizedDescription)")
@@ -47,10 +76,68 @@ class SoundManager {
     }
 }
 
+struct ParticleSystem: View {
+    let rarity: CardRarity
+    @State private var particles: [(id: Int, position: CGPoint, opacity: Double)] = []
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ForEach(particles, id: \.id) { particle in
+                Circle()
+                    .fill(haloColor(for: rarity))
+                    .frame(width: 4, height: 4) // Increased particle size
+                    .position(particle.position)
+                    .opacity(particle.opacity)
+            }
+        }
+        .onAppear {
+            createParticles()
+        }
+    }
+    
+    private func createParticles() {
+        particles = [] // Reset particles array
+        for i in 0..<200 { // Increased number of particles
+            let angle = Double.random(in: -Double.pi...Double.pi)
+            let speed = Double.random(in: 150...300) // Increased speed range
+            let startPosition = CGPoint(x: 120, y: 170) // Center of card
+            
+            var particle = (id: i, position: startPosition, opacity: 1.0)
+            particles.append(particle)
+            
+            withAnimation(.easeOut(duration: 1.0)) {
+                let dx = cos(angle) * speed
+                let dy = sin(angle) * speed
+                particle.position.x += CGFloat(dx)
+                particle.position.y += CGFloat(dy)
+                particle.opacity = 0
+                particles[i] = particle
+            }
+        }
+    }
+    
+    private func haloColor(for rarity: CardRarity) -> Color {
+        switch rarity {
+        case .common:
+            return .white
+        case .rare:
+            return .blue
+        case .epic:
+            return .purple
+        case .legendary:
+            return Color(red: 1, green: 0.84, blue: 0)
+        }
+    }
+}
+
 struct BoosterOpeningView: View {
     @ObservedObject var collectionManager: CollectionManager
-    let boosterNumber: Int
-
+    let boosterImage: String
+    
+    init(collectionManager: CollectionManager, boosterNumber: Int) {
+        self._collectionManager = ObservedObject(wrappedValue: collectionManager)
+        self.boosterImage = "booster_closed_\(boosterNumber)"
+    }
     @State private var isOpening = true
     @State private var boosterScale: CGFloat = 1.0
     @State private var boosterOpacity: Double = 1.0
@@ -62,9 +149,10 @@ struct BoosterOpeningView: View {
 
     @State private var dragOffset: CGFloat = 0
     @State private var showArrowIndicator = true
+    @State private var currentCard: BoosterCard? = nil
 
     let allCards: [BoosterCard] = [
-            // Common (50%)
+            // Common (70%)
             BoosterCard(name: "Mazda MX-5 Miata", rarity: .common),
             BoosterCard(name: "Volkswagen Golf GTI", rarity: .common),
             BoosterCard(name: "Ford Mustang GT", rarity: .common),
@@ -95,7 +183,7 @@ struct BoosterOpeningView: View {
             BoosterCard(name: "Jaguar F-Type P300", rarity: .common),
             BoosterCard(name: "Dodge Charger R/T", rarity: .common),
 
-            // Rare (30%)
+            // Rare (25%)
             BoosterCard(name: "BMW M4 GTS", rarity: .rare),
             BoosterCard(name: "Porsche 911 Carrera S", rarity: .rare),
             BoosterCard(name: "Mercedes-AMG C63 S Coupe", rarity: .rare),
@@ -117,7 +205,7 @@ struct BoosterOpeningView: View {
             BoosterCard(name: "Aston Martin DB11", rarity: .rare),
             BoosterCard(name: "Bugatti EB110", rarity: .rare),
 
-            // Epic (15%)
+            // Epic (3%)
             BoosterCard(name: "Lamborghini Aventador SVJ", rarity: .epic),
             BoosterCard(name: "Ferrari Enzo", rarity: .epic),
             BoosterCard(name: "Pagani Zonda Cinque", rarity: .epic),
@@ -128,18 +216,8 @@ struct BoosterOpeningView: View {
             BoosterCard(name: "Lamborghini Veneno", rarity: .epic),
             BoosterCard(name: "Ferrari LaFerrari", rarity: .epic),
             BoosterCard(name: "Aston Martin Valkyrie", rarity: .epic),
-            BoosterCard(name: "McLaren Senna", rarity: .epic),
-            BoosterCard(name: "Lamborghini Reventon", rarity: .epic),
-            BoosterCard(name: "Pagani Huayra BC", rarity: .epic),
-            BoosterCard(name: "Ford GT (2022)", rarity: .epic),
-            BoosterCard(name: "Hennessey Venom GT", rarity: .epic),
-            BoosterCard(name: "BMW M5 CS", rarity: .epic),
-            BoosterCard(name: "Mercedes-AMG GT Black Series", rarity: .epic),
-            BoosterCard(name: "Lexus LFA Nürburgring Edition", rarity: .epic),
-            BoosterCard(name: "Chevrolet Corvette ZR1", rarity: .epic),
-            BoosterCard(name: "Jaguar XJ220", rarity: .epic),
 
-            // Legendary (5%)
+            // Legendary (2%)
             BoosterCard(name: "Bugatti Chiron Super Sport 300+", rarity: .legendary),
             BoosterCard(name: "McLaren F1", rarity: .legendary),
             BoosterCard(name: "Ferrari F40", rarity: .legendary),
@@ -147,23 +225,12 @@ struct BoosterOpeningView: View {
             BoosterCard(name: "Lamborghini Sian FKP 37", rarity: .legendary),
             BoosterCard(name: "Koenigsegg Regera", rarity: .legendary),
             BoosterCard(name: "Rimac Nevera", rarity: .legendary),
-            BoosterCard(name: "Aston Martin One-77", rarity: .legendary),
-            BoosterCard(name: "Lamborghini Centenario", rarity: .legendary),
-            BoosterCard(name: "Bugatti Divo", rarity: .legendary),
-            BoosterCard(name: "Porsche 959", rarity: .legendary),
-            BoosterCard(name: "Rolls-Royce Sweptail", rarity: .legendary),
-            BoosterCard(name: "Ferrari 250 GTO", rarity: .legendary),
-            BoosterCard(name: "McLaren Speedtail", rarity: .legendary),
-            BoosterCard(name: "Mercedes-Benz CLK GTR", rarity: .legendary),
-            BoosterCard(name: "Bugatti Bolide", rarity: .legendary),
-            BoosterCard(name: "Aston Martin Vulcan", rarity: .legendary),
-            BoosterCard(name: "Koenigsegg CCXR Trevita", rarity: .legendary),
-            BoosterCard(name: "Lamborghini Countach LPI 800-4", rarity: .legendary),
-            BoosterCard(name: "Ferrari Monza SP2", rarity: .legendary)
+            BoosterCard(name: "Aston Martin One-77", rarity: .legendary)
         ]
 
     var body: some View {
         ZStack {
+            // Fond noir
             Color.black.opacity(0.9)
                 .ignoresSafeArea()
 
@@ -183,8 +250,8 @@ struct BoosterOpeningView: View {
 
             VStack {
                 if isOpening {
-                    // Updated booster image
-                    Image("booster_closed_\(boosterNumber)")
+                    // Booster fermé
+                    Image(boosterImage)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 300, height: 400)
@@ -198,96 +265,111 @@ struct BoosterOpeningView: View {
 
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                 isOpening = false
+                                currentCard = randomCard()
                             }
                         }
                 } else {
                     // Révélation des cartes
                     if currentCardIndex < 5 { // Exemple : 5 cartes par booster
-                        let selectedCard = randomCard()
+                        let selectedCard = currentCard ?? randomCard()
 
-                        ZStack {
-                            // Halo effect
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(haloColor(for: selectedCard.rarity))
-                                .blur(radius: 20)
-                                .frame(width: 240, height: 340)
-                                .opacity(0.7)
-                                .scaleEffect(cardScale)
-                                .offset(y: cardOffset + dragOffset)
-                            
-                            HolographicCard(cardImage: selectedCard.name)
-                                .scaleEffect(cardScale)
-                                .offset(y: cardOffset + dragOffset)
-                                .modifier(AutoHolographicAnimation())
-                                .gesture(
-                                    DragGesture()
-                                        .onChanged { gesture in
-                                            let translation = gesture.translation.height
-                                            if translation < 0 { // Only allow upward swipes
-                                                dragOffset = translation
-                                                showArrowIndicator = false
-                                            }
-                                        }
-                                        .onEnded { gesture in
-                                            if dragOffset < -100 { // Threshold for card switch
-                                                withAnimation(.easeInOut(duration: 0.3)) {
-                                                    cardOffset = -UIScreen.main.bounds.height
+                        VStack(spacing: 60) { // Increased spacing between card and rarity label
+                            ZStack {
+                                // Particles for all cards
+                                ParticleSystem(rarity: selectedCard.rarity)
+                                    .frame(width: 300, height: 400) // Increased particle area
+                                    .id(currentCardIndex) // Force view recreation for each card
+                                
+                                // Halo effect
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(haloColor(for: selectedCard.rarity))
+                                    .blur(radius: 20)
+                                    .frame(width: 240, height: 340)
+                                    .opacity(0.7)
+                                    .scaleEffect(cardScale)
+                                    .offset(y: cardOffset + dragOffset)
+                                
+                                HolographicCard(cardImage: selectedCard.name)
+                                    .scaleEffect(cardScale)
+                                    .offset(y: cardOffset + dragOffset)
+                                    .modifier(AutoHolographicAnimation())
+                                    .gesture(
+                                        DragGesture()
+                                            .onChanged { gesture in
+                                                let translation = gesture.translation.height
+                                                if translation < 0 { // Only allow upward swipes
+                                                    dragOffset = translation
+                                                    showArrowIndicator = false
                                                 }
-                                                collectionManager.addCard(selectedCard)
-                                                
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                                    cardOffset = 0
-                                                    currentCardIndex += 1
-                                                    dragOffset = 0
-                                                    showParticles = true
-                                                    showArrowIndicator = true
-                                                    // Play sound for next card
-                                                    if currentCardIndex < 5 {
-                                                        SoundManager.shared.playSound(for: randomCard().rarity)
+                                            }
+                                            .onEnded { gesture in
+                                                if dragOffset < -100 { // Threshold for card switch
+                                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                                        cardOffset = -UIScreen.main.bounds.height
+                                                    }
+                                                    collectionManager.addCard(selectedCard)
+                                                    
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                                        cardOffset = 0
+                                                        currentCardIndex += 1
+                                                        dragOffset = 0
+                                                        showArrowIndicator = true
+                                                        // Generate next card before playing sound
+                                                        if currentCardIndex < 5 {
+                                                            currentCard = randomCard()
+                                                            SoundManager.shared.playSound(for: currentCard!.rarity)
+                                                        }
+                                                    }
+                                                } else {
+                                                    withAnimation {
+                                                        dragOffset = 0
+                                                        showArrowIndicator = true
                                                     }
                                                 }
-                                            } else {
-                                                withAnimation {
-                                                    dragOffset = 0
-                                                    showArrowIndicator = true
-                                                }
+                                            }
+                                    )
+                                    .onTapGesture {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            cardOffset = -UIScreen.main.bounds.height
+                                        }
+                                        collectionManager.addCard(selectedCard)
+                                        
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            cardOffset = 0
+                                            currentCardIndex += 1
+                                            dragOffset = 0
+                                            showArrowIndicator = true
+                                            // Generate next card before playing sound
+                                            if currentCardIndex < 5 {
+                                                currentCard = randomCard()
+                                                SoundManager.shared.playSound(for: currentCard!.rarity)
                                             }
                                         }
-                                )
-                                .onTapGesture {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        cardOffset = -UIScreen.main.bounds.height
                                     }
-                                    collectionManager.addCard(selectedCard)
-                                    
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                        cardOffset = 0
-                                        currentCardIndex += 1
-                                        dragOffset = 0
-                                        showParticles = true
-                                        showArrowIndicator = true
-                                        // Play sound for next card
-                                        if currentCardIndex < 5 {
-                                            SoundManager.shared.playSound(for: randomCard().rarity)
+                                    .onAppear {
+                                        withAnimation(.easeOut(duration: 0.3)) {
+                                            cardScale = 1.3
                                         }
+                                        // Play sound when card appears
+                                        SoundManager.shared.playSound(for: selectedCard.rarity)
                                     }
-                                }
-                                .onAppear {
-                                    withAnimation(.easeOut(duration: 0.3)) {
-                                        cardScale = 1.3
-                                        showParticles = true
-                                    }
-                                    // Play sound when card appears
-                                    SoundManager.shared.playSound(for: selectedCard.rarity)
-                                }
+                            }
+                            
+                            // Rarity bubble below card
+                            ZStack {
+                                Capsule()
+                                    .fill(haloColor(for: selectedCard.rarity).opacity(0.2))
+                                    .frame(width: 140, height: 40)
+                                    .overlay(
+                                        Capsule()
+                                            .strokeBorder(haloColor(for: selectedCard.rarity), lineWidth: 2)
+                                    )
+                                
+                                Text(selectedCard.rarity.rawValue.uppercased())
+                                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                                    .foregroundColor(haloColor(for: selectedCard.rarity))
+                            }
                         }
-                        
-                        // Rarity text below card
-                        Text(selectedCard.rarity.rawValue.uppercased())
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
-                            .foregroundColor(haloColor(for: selectedCard.rarity))
-                            .padding(.top, 20)
-                            .opacity(0.8)
                     } else {
                         Text("")
                             .font(.title)
@@ -307,9 +389,10 @@ struct BoosterOpeningView: View {
     // Fonction pour tirer une carte aléatoire
     func randomCard() -> BoosterCard {
         let probabilities: [CardRarity: Double] = [
-            .common: 0.7,
+            .common: 0.25,
             .rare: 0.25,
-            .legendary: 0.05
+            .epic: 0.25,
+            .legendary: 0.25
         ]
 
         let weightedCards = allCards.flatMap { card -> [BoosterCard] in
@@ -356,12 +439,5 @@ struct AutoHolographicAnimation: ViewModifier {
             }
     }
 }
-
-
-
-
-
-
-
 
 

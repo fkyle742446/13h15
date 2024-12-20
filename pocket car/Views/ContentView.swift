@@ -69,7 +69,7 @@ struct ContentView: View {
                                             .shadow(color: .gray.opacity(0.3), radius: 8)
                                     }
                                     .disabled(boosterAvailableIn > 0)
-                                    
+
                                     // Second booster
                                     NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager, boosterNumber: 2)) {
                                         Image("booster_closed_2")
@@ -248,4 +248,6 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
+
 
