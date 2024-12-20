@@ -40,7 +40,7 @@ struct HolographicCard: View {
             )
             .overlay(
                 LinearGradient(
-                    colors: [.clear, .white.opacity(0.5), .clear],
+                    colors: [.clear, .white.opacity(0.2), .clear],
                     startPoint: .topLeading,
                     endPoint: UnitPoint(
                         x: abs(translation.height) / 100 + 1,
@@ -53,11 +53,11 @@ struct HolographicCard: View {
                 RoundedRectangle(cornerRadius: 15)
                     .strokeBorder(
                         LinearGradient(
-                            colors: [.clear, .white.opacity(1), .clear],
+                            colors: [.clear, .yellow.opacity(1), .clear],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
-                        lineWidth: 5
+                        lineWidth: 10
                     )
                     .frame(width: 250, height: 350)
             )
