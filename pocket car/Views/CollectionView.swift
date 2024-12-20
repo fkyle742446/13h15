@@ -102,8 +102,8 @@ struct CardView: View {
                 // Halo effect
                 RoundedRectangle(cornerRadius: 12)
                     .fill(haloColor(for: card.rarity))
-                    .blur(radius: 15)
-                    .frame(maxWidth: 110, maxHeight: 150)
+                    .blur(radius: 5)
+                    .frame(maxWidth: 100, maxHeight: 140)
                     .opacity(0.7)
                 
                 Image(card.name)
@@ -170,7 +170,7 @@ struct ZoomedCardView: View {
                     RoundedRectangle(cornerRadius: 16)
                         .fill(haloColor(for: selectedCard?.rarity ?? .common))
                         .blur(radius: 20)
-                        .frame(width: 320, height: 440)
+                        .frame(width: 280, height: 400)
                         .opacity(0.7)
                     
                     HolographicCard(cardImage: selectedCard?.name ?? "")
@@ -188,6 +188,5 @@ struct ZoomedCardView: View {
         .transition(.opacity)
     }
 }
-
 
 

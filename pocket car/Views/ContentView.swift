@@ -16,7 +16,7 @@ struct ContentView: View {
             ZStack {
                 // Background gradient
                 LinearGradient(
-                    gradient: Gradient(colors: [.white, Color(.systemGray6)]),
+                    gradient: Gradient(colors: [.white, Color(.systemGray5)]),
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -29,8 +29,8 @@ struct ContentView: View {
                         .scaledToFit()
                         .frame(width: 60, height: 60)
                         .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white, lineWidth: 2))
-                        .shadow(color: .gray.opacity(0.2), radius: 5)
+                        .overlay(Circle().stroke(Color.gray, lineWidth: 0.5))
+                        .shadow(color: .gray.opacity(0.3), radius: 10)
                         .padding(.top, 20)
                     
                     Spacer()
@@ -50,13 +50,13 @@ struct ContentView: View {
                             
                             // Surface rectangle
                             RoundedRectangle(cornerRadius: 25)
-                                .fill(Color.white.opacity(0.7))
+                                .fill(Color.white.opacity(1))
                                 .frame(height: 280)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 25)
                                         .stroke(Color.white, lineWidth: 1)
                                 )
-                                .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 2)
+                                .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
                             
                             VStack(spacing: 15) {
                                 HStack(spacing: 20) {
@@ -115,12 +115,12 @@ struct ContentView: View {
                                 .padding(.vertical, 20)
                                 .background(
                                     RoundedRectangle(cornerRadius: 20)
-                                        .fill(Color.white.opacity(0.7))
+                                        .fill(Color.white.opacity(1))
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 20)
                                                 .stroke(Color.white, lineWidth: 1)
                                         )
-                                        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 2)
+                                        .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
                                 )
                             }
                             
@@ -135,12 +135,12 @@ struct ContentView: View {
                                 .padding(.vertical, 20)
                                 .background(
                                     RoundedRectangle(cornerRadius: 20)
-                                        .fill(Color.white.opacity(0.7))
+                                        .fill(Color.white.opacity(1))
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 20)
                                                 .stroke(Color.white, lineWidth: 1)
                                         )
-                                        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 2)
+                                        .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
                                 )
                             }
                         }
@@ -160,14 +160,14 @@ struct ContentView: View {
                             }
                             
                             ProgressView(value: Double(collectionManager.cards.count), total: 150)
-                                .tint(.blue)
+                                .tint(.pink)
                                 .background(Color.white)
                         }
                         .padding()
                         .background(
                             RoundedRectangle(cornerRadius: 20)
                                 .fill(Color.white)
-                                .shadow(color: .gray.opacity(0.1), radius: 5)
+                                .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
                         )
                         .padding(.horizontal)
                         .padding(.bottom, 20)

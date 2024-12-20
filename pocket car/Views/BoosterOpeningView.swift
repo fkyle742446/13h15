@@ -85,7 +85,7 @@ struct ParticleSystem: View {
             ForEach(particles, id: \.id) { particle in
                 Circle()
                     .fill(haloColor(for: rarity))
-                    .frame(width: 4, height: 4) // Increased particle size
+                    .frame(width: 6, height: 6) // Increased particle size
                     .position(particle.position)
                     .opacity(particle.opacity)
             }
@@ -97,7 +97,7 @@ struct ParticleSystem: View {
     
     private func createParticles() {
         particles = [] // Reset particles array
-        for i in 0..<200 { // Increased number of particles
+        for i in 0..<50 { // Increased number of particles
             let angle = Double.random(in: -Double.pi...Double.pi)
             let speed = Double.random(in: 150...300) // Increased speed range
             let startPosition = CGPoint(x: 120, y: 170) // Center of card
@@ -238,7 +238,7 @@ struct BoosterOpeningView: View {
             if !isOpening && showArrowIndicator {
                 VStack {
                     Image(systemName: "chevron.up")
-                        .font(.system(size: 24, weight: .bold))
+                        .font(.system(size: 14, weight: .bold))
                         .foregroundColor(.white.opacity(0.6))
                         .opacity(1.0 - abs(dragOffset/100))
                         .offset(y: -20)
@@ -284,7 +284,7 @@ struct BoosterOpeningView: View {
                                 RoundedRectangle(cornerRadius: 20)
                                     .fill(haloColor(for: selectedCard.rarity))
                                     .blur(radius: 20)
-                                    .frame(width: 240, height: 340)
+                                    .frame(width: 250, height: 350)
                                     .opacity(0.7)
                                     .scaleEffect(cardScale)
                                     .offset(y: cardOffset + dragOffset)
@@ -303,7 +303,7 @@ struct BoosterOpeningView: View {
                                                 }
                                             }
                                             .onEnded { gesture in
-                                                if dragOffset < -100 { // Threshold for card switch
+                                                if dragOffset < -50 { // Threshold for card switch
                                                     withAnimation(.easeInOut(duration: 0.3)) {
                                                         cardOffset = -UIScreen.main.bounds.height
                                                     }
@@ -425,8 +425,8 @@ struct AutoHolographicAnimation: ViewModifier {
     func body(content: Content) -> some View {
         content
             .rotation3DEffect(
-                .degrees(isAnimating ? 5 : -5),
-                axis: (x: 0.0, y: 1.0, z: 0.0)
+                .degrees(isAnimating ? 2 : -2),
+                axis: (x: -1.0, y: 1.0, z: 0.0)
             )
             .onAppear {
                 withAnimation(
