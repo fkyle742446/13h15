@@ -22,7 +22,7 @@ struct ContentView: View {
                 )
                 .ignoresSafeArea()
 
-                VStack(spacing: 25) {
+                VStack {
                     // Single profile image
                     Image("user_profile")
                         .resizable()
@@ -32,142 +32,137 @@ struct ContentView: View {
                         .overlay(Circle().stroke(Color.white, lineWidth: 2))
                         .shadow(color: .gray.opacity(0.2), radius: 5)
                         .padding(.top, 20)
+                    
+                    Spacer()
 
-                    Spacer() // Add spacer to push content down
-
-                    // Boosters section
-                    ZStack {
-                        // Base rectangle with depth effect
-                        RoundedRectangle(cornerRadius: 25)
-                            .fill(Color("mint").opacity(0.1))
-                            .frame(height: 280)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 25)
-                                    .stroke(Color("mint").opacity(0.3), lineWidth: 1)
-                            )
-                            .shadow(color: Color("mint").opacity(0.1), radius: 10, x: 0, y: 5)
-                        
-                        // Surface rectangle
-                        RoundedRectangle(cornerRadius: 25)
-                            .fill(Color.white.opacity(0.7))
-                            .frame(height: 280)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 25)
-                                    .stroke(Color.white, lineWidth: 1)
-                            )
-                            .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 2)
-                        
-                        VStack(spacing: 15) {
-                            HStack(spacing: 20) {
-                                ForEach(0..<2) { index in
-                                    NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager)) {
-                                        Image("booster_closed")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(height: 200)
-                                            .shadow(color: .gray.opacity(0.3), radius: 8)
+                    VStack(spacing: 15) {
+                        // Boosters section
+                        ZStack {
+                            // Base rectangle with depth effect
+                            RoundedRectangle(cornerRadius: 25)
+                                .fill(Color("mint").opacity(0.1))
+                                .frame(height: 280)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 25)
+                                        .stroke(Color("mint").opacity(0.3), lineWidth: 1)
+                                )
+                                .shadow(color: Color("mint").opacity(0.1), radius: 10, x: 0, y: 5)
+                            
+                            // Surface rectangle
+                            RoundedRectangle(cornerRadius: 25)
+                                .fill(Color.white.opacity(0.7))
+                                .frame(height: 280)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 25)
+                                        .stroke(Color.white, lineWidth: 1)
+                                )
+                                .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 2)
+                            
+                            VStack(spacing: 15) {
+                                HStack(spacing: 20) {
+                                    ForEach(0..<2) { index in
+                                        NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager)) {
+                                            Image("booster_closed")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(height: 200)
+                                                .shadow(color: .gray.opacity(0.3), radius: 8)
+                                        }
+                                        .disabled(boosterAvailableIn > 0)
                                     }
-                                    .disabled(boosterAvailableIn > 0)
+                                }
+                                
+                                // Timer display
+                                if boosterAvailableIn > 0 {
+                                    HStack {
+                                        Image(systemName: "clock")
+                                            .foregroundColor(.gray)
+                                        Text(timeRemainingString())
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(.gray)
+                                    }
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 15)
+                                    .background(
+                                        Capsule()
+                                            .fill(Color.white)
+                                            .shadow(color: .gray.opacity(0.2), radius: 4)
+                                    )
                                 }
                             }
-                            
-                            // Timer display
-                            if boosterAvailableIn > 0 {
-                                HStack {
-                                    Image(systemName: "clock")
-                                        .foregroundColor(.gray)
-                                    Text(timeRemainingString())
+                        }
+                        .padding(.horizontal)
+
+                        // Collection and Shop buttons
+                        HStack(spacing: 20) {
+                            NavigationLink(destination: CollectionView(collectionManager: collectionManager)) {
+                                VStack {
+                                    Image(systemName: "rectangle.stack.fill")
+                                        .font(.system(size: 30))
+                                    Text("Collection")
                                         .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(.gray)
                                 }
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 15)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 20)
                                 .background(
-                                    Capsule()
-                                        .fill(Color.white)
-                                        .shadow(color: .gray.opacity(0.2), radius: 4)
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .fill(Color.white.opacity(0.7))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .stroke(Color.white, lineWidth: 1)
+                                        )
+                                        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 2)
+                                )
+                            }
+                            
+                            NavigationLink(destination: Text("Shop")) {
+                                VStack {
+                                    Image(systemName: "bag.fill")
+                                        .font(.system(size: 30))
+                                    Text("Shop")
+                                        .font(.system(size: 14, weight: .medium))
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 20)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .fill(Color.white.opacity(0.7))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .stroke(Color.white, lineWidth: 1)
+                                        )
+                                        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 2)
                                 )
                             }
                         }
-                    }
-                    .padding(.horizontal)
+                        .foregroundColor(.gray)
+                        .padding(.horizontal)
 
-                    Spacer() // Add spacer between boosters and buttons
-
-                    // Collection and Shop buttons
-                    HStack(spacing: 20) {
-                        NavigationLink(destination: CollectionView(collectionManager: collectionManager)) {
-                            VStack {
-                                Image(systemName: "rectangle.stack.fill")
-                                    .font(.system(size: 30))
-                                Text("Collection")
+                        // Bottom progress bar
+                        VStack(alignment: .leading, spacing: 5) {
+                            HStack {
+                                Text("Register 150 cards in collection")
                                     .font(.system(size: 14, weight: .medium))
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 20)
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color.white.opacity(0.7))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .stroke(Color.white, lineWidth: 1)
-                                    )
-                                    .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 2)
-                            )
-                        }
-                        
-                        NavigationLink(destination: Text("Shop")) {
-                            VStack {
-                                Image(systemName: "bag.fill")
-                                    .font(.system(size: 30))
-                                Text("Shop")
+                                    .foregroundColor(.gray)
+                                Spacer()
+                                Text("\(collectionManager.cards.count)/150")
                                     .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.gray)
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 20)
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color.white.opacity(0.7))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .stroke(Color.white, lineWidth: 1)
-                                    )
-                                    .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 2)
-                            )
+                            
+                            ProgressView(value: Double(collectionManager.cards.count), total: 150)
+                                .tint(.blue)
+                                .background(Color.white)
                         }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.white)
+                                .shadow(color: .gray.opacity(0.1), radius: 5)
+                        )
+                        .padding(.horizontal)
+                        .padding(.bottom, 20)
                     }
-                    .foregroundColor(.gray)
-                    .padding(.horizontal)
-
-                    Spacer() // Add spacer between buttons and progress bar
-
-                    // Bottom progress bar
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("Register 150 cards in collection")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.gray)
-                        
-                        GeometryReader { geometry in
-                            ZStack(alignment: .leading) {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.gray.opacity(0.1))
-                                
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color("mint"))
-                                    .frame(width: geometry.size.width * CGFloat(collectionManager.cards.count) / 150.0)
-                            }
-                            .frame(height: 8)
-                        }
-                        .frame(height: 8)
-                    }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.white)
-                            .shadow(color: .gray.opacity(0.1), radius: 5)
-                    )
-                    .padding(.horizontal)
-                    .padding(.bottom, 20)
                 }
             }
         }
