@@ -60,16 +60,25 @@ struct ContentView: View {
                             
                             VStack(spacing: 15) {
                                 HStack(spacing: 20) {
-                                    ForEach(0..<2) { index in
-                                        NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager)) {
-                                            Image("booster_closed")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(height: 200)
-                                                .shadow(color: .gray.opacity(0.3), radius: 8)
-                                        }
-                                        .disabled(boosterAvailableIn > 0)
+                                    // First booster
+                                    NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager, boosterNumber: 1)) {
+                                        Image("booster_closed_1")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(height: 200)
+                                            .shadow(color: .gray.opacity(0.3), radius: 8)
                                     }
+                                    .disabled(boosterAvailableIn > 0)
+                                    
+                                    // Second booster
+                                    NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager, boosterNumber: 2)) {
+                                        Image("booster_closed_2")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(height: 200)
+                                            .shadow(color: .gray.opacity(0.3), radius: 8)
+                                    }
+                                    .disabled(boosterAvailableIn > 0)
                                 }
                                 
                                 // Timer display
