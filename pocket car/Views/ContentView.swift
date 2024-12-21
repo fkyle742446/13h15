@@ -7,9 +7,13 @@ struct ContentView: View {
     @State private var shadowRadius: CGFloat = 15
     @State private var boosterAvailableIn: TimeInterval = 1 * 3 // 3 seconds for testing
     @State private var timer: Timer? = nil
+    @State private var giftAvailableIn: TimeInterval = 1 * 10 // 10 seconds for testing
     
     @State private var audioPlayer: AVAudioPlayer?
     @State private var isFadingOut: Bool = false
+    @State private var glareOffset: CGFloat = -200
+    @State private var booster1GlareOffset: CGFloat = -200
+    @State private var booster2GlareOffset: CGFloat = -200
     
     var body: some View {
         NavigationView {
@@ -22,16 +26,88 @@ struct ContentView: View {
                 )
                 .ignoresSafeArea()
 
-                VStack {
-                    // Single profile image
-                    Image("user_profile")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 60, height: 60)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.gray, lineWidth: 0.5))
-                        .shadow(color: .gray.opacity(0.3), radius: 10)
-                        .padding(.top, 20)
+                VStack(spacing: 30) {
+                    // Top logo and gift button
+                    VStack(spacing: 20) {
+                        // Logo with glare effect
+                        ZStack {
+                            Image("logo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 80)
+                            
+                            // Glare effect
+                            Rectangle()
+                                .fill(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [
+                                            .clear,
+                                            .white.opacity(0.5),
+                                            .clear
+                                        ]),
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .frame(width: 50)
+                                .offset(x: glareOffset)
+                                .blur(radius: 5)
+                        }
+                        .mask(
+                            Image("logo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 80)
+                        )
+                        .onAppear {
+                            withAnimation(Animation.linear(duration: 15.0).repeatForever(autoreverses: false)) {
+                                glareOffset = 200
+                            }
+                        }
+                        
+                        // Gift button and timer
+                        VStack(spacing: 8) {
+                            NavigationLink(destination: Text("Gifts")) {
+                                VStack {
+                                    Image(systemName: "gift.fill")
+                                        .font(.system(size: 24))
+                                    Text("Gift")
+                                        .font(.system(size: 12, weight: .medium))
+                                }
+                                .foregroundColor(.gray)
+                                .frame(width: 60, height: 60)
+                                .background(
+                                    Circle()
+                                        .fill(Color.white.opacity(1))
+                                        .overlay(
+                                            Circle()
+                                                .stroke(Color.white, lineWidth: 1)
+                                        )
+                                        .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
+                                )
+                            }
+                            .disabled(giftAvailableIn > 0)
+                            
+                            if giftAvailableIn > 0 {
+                                HStack {
+                                    Image(systemName: "clock")
+                                        .foregroundColor(.gray)
+                                    Text(giftTimeRemainingString())
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 15)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.white)
+                                        .shadow(color: .gray.opacity(0.4), radius: 4)
+                                )
+                            }
+                        }
+                    }
+                    .padding(.top, 20)
+                    .padding(.horizontal)
                     
                     Spacer()
 
@@ -58,30 +134,92 @@ struct ContentView: View {
                                 )
                                 .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
                             
-                            VStack(spacing: 15) {
+                            VStack {
+                                Spacer()
                                 HStack(spacing: 20) {
-                                    // First booster
+                                    // First booster with glare
                                     NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager, boosterNumber: 1)) {
-                                        Image("booster_closed_1")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(height: 200)
-                                            .shadow(color: .gray.opacity(0.3), radius: 8)
+                                        ZStack {
+                                            Image("booster_closed_1")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(height: 200)
+                                            
+                                            // Glare effect for booster 1
+                                            Rectangle()
+                                                .fill(
+                                                    LinearGradient(
+                                                        gradient: Gradient(colors: [
+                                                            .clear,
+                                                            .white.opacity(0.5),
+                                                            .clear
+                                                        ]),
+                                                        startPoint: .leading,
+                                                        endPoint: .trailing
+                                                    )
+                                                )
+                                                .frame(width: 50)
+                                                .offset(x: booster1GlareOffset)
+                                                .blur(radius: 5)
+                                        }
+                                        .mask(
+                                            Image("booster_closed_1")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(height: 200)
+                                        )
+                                        .shadow(color: .gray.opacity(0.2), radius: 10)
                                     }
                                     .disabled(boosterAvailableIn > 0)
+                                    .onAppear {
+                                        withAnimation(Animation.linear(duration: 9.0).repeatForever(autoreverses: false)) {
+                                            booster1GlareOffset = 50
+                                        }
+                                    }
 
-                                    // Second booster
+                                    // Second booster with glare
                                     NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager, boosterNumber: 2)) {
-                                        Image("booster_closed_2")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(height: 200)
-                                            .shadow(color: .gray.opacity(0.3), radius: 8)
+                                        ZStack {
+                                            Image("booster_closed_2")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(height: 200)
+                                            
+                                            // Glare effect for booster 2
+                                            Rectangle()
+                                                .fill(
+                                                    LinearGradient(
+                                                        gradient: Gradient(colors: [
+                                                            .clear,
+                                                            .white.opacity(0.5),
+                                                            .clear
+                                                        ]),
+                                                        startPoint: .leading,
+                                                        endPoint: .trailing
+                                                    )
+                                                )
+                                                .frame(width: 50)
+                                                .offset(x: booster2GlareOffset)
+                                                .blur(radius: 5)
+                                        }
+                                        .mask(
+                                            Image("booster_closed_2")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(height: 200)
+                                        )
+                                        .shadow(color: .gray.opacity(0.2), radius: 10)
                                     }
                                     .disabled(boosterAvailableIn > 0)
+                                    .onAppear {
+                                        withAnimation(Animation.linear(duration: 9.0).repeatForever(autoreverses: false)) {
+                                            booster2GlareOffset = 50
+                                        }
+                                    }
                                 }
+                                Spacer()
                                 
-                                // Timer display
+                                // Timer display with placeholder
                                 if boosterAvailableIn > 0 {
                                     HStack {
                                         Image(systemName: "clock")
@@ -95,8 +233,9 @@ struct ContentView: View {
                                     .background(
                                         Capsule()
                                             .fill(Color.white)
-                                            .shadow(color: .gray.opacity(0.2), radius: 4)
+                                            .shadow(color: .gray.opacity(0.4), radius: 4)
                                     )
+                                    .padding(.bottom, 10)
                                 }
                             }
                         }
@@ -177,6 +316,7 @@ struct ContentView: View {
         }
         .onAppear {
             startTimer()
+            startGiftTimer()
             playMusic()
         }
         .onDisappear {
@@ -190,16 +330,28 @@ struct ContentView: View {
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             if boosterAvailableIn > 0 {
                 boosterAvailableIn -= 1
-            } else {
-                timer?.invalidate()
+            }
+            if giftAvailableIn > 0 {
+                giftAvailableIn -= 1
             }
         }
+    }
+    
+    private func startGiftTimer() {
+        giftAvailableIn = 10 // Reset gift timer to 10 seconds
     }
     
     private func timeRemainingString() -> String {
         let hours = Int(boosterAvailableIn) / 3600
         let minutes = (Int(boosterAvailableIn) % 3600) / 60
         let seconds = Int(boosterAvailableIn) % 60
+        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    }
+    
+    private func giftTimeRemainingString() -> String {
+        let hours = Int(giftAvailableIn) / 3600
+        let minutes = (Int(giftAvailableIn) % 3600) / 60
+        let seconds = Int(giftAvailableIn) % 60
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
     
@@ -248,6 +400,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-
-
 
