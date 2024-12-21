@@ -45,9 +45,13 @@ struct HolographicCard: View {
                     endPoint: UnitPoint(
                         x: abs(translation.height) / 100 + 1,
                         y: abs(translation.height) / 100 + 1
+
+
                     )
                 )
                 .frame(width: 250, height: 350)
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 15)
@@ -70,4 +74,3 @@ struct HolographicCard: View {
         .frame(width: 250, height: 350)
     }
 }
-
