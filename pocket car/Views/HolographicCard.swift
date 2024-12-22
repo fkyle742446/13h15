@@ -20,6 +20,8 @@ struct HolographicCard: View {
 
     var body: some View {
         ZStack {
+            
+            
             // Gradient pour l'effet holographique
             LinearGradient(
                 gradient: Gradient(colors: [.blue, .purple, .pink, .yellow, .green]),
@@ -30,13 +32,21 @@ struct HolographicCard: View {
             .mask(
                 RoundedRectangle(cornerRadius: 15)
                     .frame(width: 250, height: 350)
+                
+            
             )
+            
             .overlay(
                 Image(cardImage)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 250, height: 350)
                     .cornerRadius(15)
+                
+                
+        
+                
+
             )
             .overlay(
                 LinearGradient(
@@ -48,29 +58,64 @@ struct HolographicCard: View {
 
 
                     )
+                    
+                    
+                    
+
                 )
                 .frame(width: 250, height: 350)
                 .clipShape(RoundedRectangle(cornerRadius: 15))
+                
+                
+                
 
             )
+            
             .overlay(
                 RoundedRectangle(cornerRadius: 15)
                     .strokeBorder(
                         LinearGradient(
-                            colors: [.clear, .yellow.opacity(1), .clear],
+                            colors: [.clear, .yellow.opacity(20), .clear],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
+                           
+                            
+                            
+            
+                            
                         ),
                         lineWidth: 10
+                    
+                        
+                        
                     )
                     .frame(width: 250, height: 350)
+                
+              
+                
             )
+        
+        
             .rotation3DEffect(
                 .degrees(15),
-                axis: (x: -translation.height / 50, y: translation.width / 50, z: 0)
+                axis: (x: -translation.height / 250, y: translation.width / 400, z: 0)
+              
+                
             )
-            .gesture(drag)
+            
+            Text("2/67")
+                .font(.system(size: 10, weight: .bold))
+                .foregroundColor(.black)
+                .padding(5)
+                .background(RoundedRectangle(cornerRadius: 15).fill(Color.yellow))
+                .offset(x: 92, y: -147)
+
+            
+            
         }
+        
+
+        
         .frame(width: 250, height: 350)
     }
 }

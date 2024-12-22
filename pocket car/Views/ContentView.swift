@@ -289,16 +289,16 @@ struct ContentView: View {
                         // Bottom progress bar
                         VStack(alignment: .leading, spacing: 5) {
                             HStack {
-                                Text("Register 150 cards in collection")
+                                Text("Register 67 cards in collection")
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.gray)
                                 Spacer()
-                                Text("\(collectionManager.cards.count)/150")
+                                Text("\(collectionManager.cards.count)/67")
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.gray)
                             }
                             
-                            ProgressView(value: Double(collectionManager.cards.count), total: 150)
+                            ProgressView(value: Double(collectionManager.cards.count), total: 67)
                                 .tint(.pink)
                                 .background(Color.white)
                         }

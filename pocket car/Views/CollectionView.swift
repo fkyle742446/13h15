@@ -7,7 +7,7 @@ struct CollectionView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                LinearGradient(gradient: Gradient(colors: [Color.black, Color.gray.opacity(0.5)]), startPoint: .top, endPoint: .bottom)
+                LinearGradient(gradient: Gradient(colors: [Color.black, Color.gray.opacity(0.8)]), startPoint: .top, endPoint: .bottom)
                     .ignoresSafeArea()
 
                 VStack(spacing: 16) {
@@ -21,7 +21,7 @@ struct CollectionView: View {
                         Spacer()
 
                         // Affiche le compteur de cartes collectées
-                        Text("\(collectionManager.cards.count)/150")
+                        Text("\(collectionManager.cards.count)/67")
                             .font(.system(size: 16, weight: .medium, design: .default))
                             .foregroundColor(.white.opacity(0.7))
                             .padding(.top, 20)
@@ -110,7 +110,7 @@ struct CardView: View {
                     .resizable()
                     .aspectRatio(3 / 4, contentMode: .fit)
                     .frame(maxWidth: 100, maxHeight: 140)
-                    .cornerRadius(12)
+                    .cornerRadius(5)
                     .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 4)
 
                 if count > 1 {
@@ -128,6 +128,7 @@ struct CardView: View {
                 .foregroundColor(.white)
                 .lineLimit(1)
         }
+        
         .padding(10)
         .background(
             RoundedRectangle(cornerRadius: 12)
@@ -143,7 +144,7 @@ struct CardView: View {
 // Composant pour afficher une carte en mode zoom
 struct ZoomedCardView: View {
     @Binding var selectedCard: BoosterCard?
-
+    
     private func haloColor(for rarity: CardRarity) -> Color {
         switch rarity {
         case .common:
@@ -156,7 +157,7 @@ struct ZoomedCardView: View {
             return Color(red: 1, green: 0.84, blue: 0)
         }
     }
-
+    
     var body: some View {
         ZStack {
             Color.black.opacity(0.9).ignoresSafeArea()
@@ -165,7 +166,7 @@ struct ZoomedCardView: View {
                         selectedCard = nil
                     }
                 }
-
+            
             VStack(spacing: 20) {
                 ZStack {
                     // Halo effect
@@ -181,7 +182,7 @@ struct ZoomedCardView: View {
                         .cornerRadius(16)
                 }
                 .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
-
+                
                 Text(selectedCard?.name ?? "")
                     .font(.system(size: 22, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)

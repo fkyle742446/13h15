@@ -85,7 +85,7 @@ struct ParticleSystem: View {
             ForEach(particles, id: \.id) { particle in
                 Circle()
                     .fill(haloColor(for: rarity))
-                    .frame(width: 6, height: 6) // Increased particle size
+                    .frame(width: 5, height: 5) // Increased particle size
                     .position(particle.position)
                     .opacity(particle.opacity)
             }
@@ -97,12 +97,12 @@ struct ParticleSystem: View {
     
     private func createParticles() {
         particles = [] // Reset particles array
-        for i in 0..<50 { // Increased number of particles
+        for i in 0...200 { // Increased number of particles
             let angle = Double.random(in: -Double.pi...Double.pi)
-            let speed = Double.random(in: 150...300) // Increased speed range
+            let speed = Double.random(in: 150...500) // Increased speed range
             let startPosition = CGPoint(x: 120, y: 170) // Center of card
             
-            var particle = (id: i, position: startPosition, opacity: 1.0)
+            var particle = (id: i, position: startPosition, opacity: 0.8)
             particles.append(particle)
             
             withAnimation(.easeOut(duration: 1.0)) {
@@ -119,7 +119,7 @@ struct ParticleSystem: View {
     private func haloColor(for rarity: CardRarity) -> Color {
         switch rarity {
         case .common:
-            return .white
+            return .gray
         case .rare:
             return .blue
         case .epic:
@@ -358,11 +358,11 @@ struct BoosterOpeningView: View {
                             // Rarity bubble below card
                             ZStack {
                                 Capsule()
-                                    .fill(haloColor(for: selectedCard.rarity).opacity(0.2))
+                                    .fill(haloColor(for: selectedCard.rarity).opacity(0.4))
                                     .frame(width: 140, height: 40)
                                     .overlay(
                                         Capsule()
-                                            .strokeBorder(haloColor(for: selectedCard.rarity), lineWidth: 2)
+                                            .strokeBorder(haloColor(for: selectedCard.rarity), lineWidth: 1)
                                     )
                                 
                                 Text(selectedCard.rarity.rawValue.uppercased())
@@ -425,7 +425,7 @@ struct AutoHolographicAnimation: ViewModifier {
     func body(content: Content) -> some View {
         content
             .rotation3DEffect(
-                .degrees(isAnimating ? 2 : -2),
+                .degrees(isAnimating ? 4 : -4),
                 axis: (x: -1.0, y: 1.0, z: 0.0)
             )
             .onAppear {
