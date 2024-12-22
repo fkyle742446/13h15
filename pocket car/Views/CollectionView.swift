@@ -132,6 +132,8 @@ struct CardView: View {
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(card.rarity == .legendary ? Color.yellow.opacity(0.2) :
+                        card.rarity == .epic ? Color.purple.opacity(0.2) :
+                        card.rarity == .common ? Color.white.opacity(0.2) :
                       card.rarity == .rare ? Color.blue.opacity(0.2) : Color.gray.opacity(0.2))
         )
         .shadow(color: .black.opacity(0.2), radius: 5, x: 0, y: 3)
