@@ -1,5 +1,6 @@
 import SwiftUI
 import AVFoundation
+import SceneKit
 
 struct ContentView: View {
     @StateObject var collectionManager = CollectionManager()
@@ -64,6 +65,28 @@ struct ContentView: View {
                                 glareOffset = 200
                             }
                         }
+                        
+                        // 3D Model View
+                        SceneView(
+                            scene: {
+                                let scene = SCNScene(named: "car.obj")!
+                                scene.background.contents = UIColor.clear
+                                let node = scene.rootNode.childNodes.first!
+                                
+                                // Add rotation animation
+                                let rotation = CABasicAnimation(keyPath: "rotation")
+                                rotation.fromValue = NSValue(scnVector4: SCNVector4(0, 1, 0, 0))
+                                rotation.toValue = NSValue(scnVector4: SCNVector4(0, 1, 0, Float.pi * 2))
+                                rotation.duration = 20
+                                rotation.repeatCount = .infinity
+                                node.addAnimation(rotation, forKey: "rotate")
+                                
+                                return scene
+                            }(),
+                            options: [.autoenablesDefaultLighting, .allowsCameraControl]
+                        )
+                        .frame(height: 150)
+                        .background(Color.clear)
                         
                         // Gift button and timer
                         VStack(spacing: 8) {
