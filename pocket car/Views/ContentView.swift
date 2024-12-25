@@ -29,7 +29,7 @@ struct ContentView: View {
                 )
                 .ignoresSafeArea()
 
-                VStack(spacing: 20) {
+                VStack(spacing: 10) {
                     // Top logo and gift button
                     VStack(spacing: 5) {
                         // Logo with glare effect
@@ -75,7 +75,7 @@ struct ContentView: View {
                             
                             let model = SK3DNode(viewportSize: .init(width: 15, height: 15))
                             model.scnScene = {
-                                let scnScene = SCNScene(named: "base.obj")!
+                                let scnScene = SCNScene(named: "car.obj")!
                                 scnScene.background.contents = UIColor.clear
                                 
                                 let node = scnScene.rootNode.childNodes.first!
@@ -87,6 +87,32 @@ struct ContentView: View {
                                 rotation.duration = 40
                                 rotation.repeatCount = .infinity
                                 node.addAnimation(rotation, forKey: "rotate")
+                                
+                                
+                                // Ajouter les textures au matériau
+                                        let material = SCNMaterial()
+                                        material.diffuse.contents = UIImage(named: "texture_diffuse.png") // Texture diffuse
+                                        material.metalness.contents = UIImage(named: "texture_metallic.png") // Texture métallique
+                                        material.normal.contents = UIImage(named: "texture_normal.png") // Carte de normales
+                                        material.roughness.contents = UIImage(named: "texture_roughness.png") // Rugosité
+                                
+                                // Ajouter une émission pour rendre l'objet plus lumineux
+                                material.emission.contents = UIColor.white // Couleur émise
+                                material.emission.intensity = 0.2 // Intensité de la lumière émise
+                                
+                                // Augmenter la réflexion spéculaire
+                                material.specular.contents = UIColor.white
+                                material.shininess = 0.7 // Contrôle la brillance
+                            
+                                
+                                
+                                // Ajouter la texture shaded comme diffuse alternative (si besoin)
+                                            let shadedMaterial = SCNMaterial()
+                                            shadedMaterial.diffuse.contents = UIImage(named: "shaded.png") // Shaded texture
+                                
+                                // Appliquer le matériau à la géométrie
+                                       node.geometry?.materials = [material]
+
                                 
                                 // Add camera to the scene
                                 let cameraNode = SCNNode()
@@ -258,24 +284,30 @@ struct ContentView: View {
                                 }
                                 Spacer()
                                 
-                                // Timer display with placeholder
-                                if boosterAvailableIn > 0 {
-                                    HStack {
+                                // Timer display or instruction text
+                                HStack {
+                                    if boosterAvailableIn > 0 {
                                         Image(systemName: "clock")
                                             .foregroundColor(.gray)
                                         Text(timeRemainingString())
                                             .font(.system(size: 14, weight: .medium))
                                             .foregroundColor(.gray)
+                                    } else {
+                                        Image(systemName: "hand.tap")
+                                            .foregroundColor(.gray)
+                                        Text("Click on a booster")
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(.gray)
                                     }
-                                    .padding(.vertical, 8)
-                                    .padding(.horizontal, 15)
-                                    .background(
-                                        Capsule()
-                                            .fill(Color.white)
-                                            .shadow(color: .gray.opacity(0.4), radius: 4)
-                                    )
-                                    .padding(.bottom, 10)
                                 }
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 15)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.white)
+                                        .shadow(color: .gray.opacity(0.4), radius: 4)
+                                )
+                                .padding(.bottom, 10)
                             }
                         }
                         .padding(.horizontal)
