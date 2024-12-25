@@ -29,15 +29,16 @@ struct ContentView: View {
                 )
                 .ignoresSafeArea()
 
-                VStack(spacing: 10) {
+                VStack(spacing: 0) {
                     // Top logo and gift button
-                    VStack(spacing: 5) {
+                    VStack(spacing: -80) {
                         // Logo with glare effect
                         ZStack {
                             Image("logo")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(height: 80)
+            
                             
                             // Glare effect
                             Rectangle()
@@ -68,110 +69,163 @@ struct ContentView: View {
                             }
                         }
                         
-                        // 3D Model View with Transparent Background
-                        SpriteView(scene: { () -> SKScene in
-                            let scene = SKScene()
-                            scene.backgroundColor = UIColor.clear
-                            
-                            let model = SK3DNode(viewportSize: .init(width: 15, height: 15))
-                            model.scnScene = {
-                                let scnScene = SCNScene(named: "car.obj")!
-                                scnScene.background.contents = UIColor.clear
-                                
-                                let node = scnScene.rootNode.childNodes.first!
-                                
-                                // Add rotation animation
-                                let rotation = CABasicAnimation(keyPath: "rotation")
-                                rotation.fromValue = NSValue(scnVector4: SCNVector4(0, 1, 0, 0))
-                                rotation.toValue = NSValue(scnVector4: SCNVector4(0, 1, 0, Float.pi * 2))
-                                rotation.duration = 40
-                                rotation.repeatCount = .infinity
-                                node.addAnimation(rotation, forKey: "rotate")
-                                
-                                
-                                // Ajouter les textures au matériau
-                                        let material = SCNMaterial()
-                                        material.diffuse.contents = UIImage(named: "texture_diffuse.png") // Texture diffuse
-                                        material.metalness.contents = UIImage(named: "texture_metallic.png") // Texture métallique
-                                        material.normal.contents = UIImage(named: "texture_normal.png") // Carte de normales
-                                        material.roughness.contents = UIImage(named: "texture_roughness.png") // Rugosité
-                                
-                                // Ajouter une émission pour rendre l'objet plus lumineux
-                                material.emission.contents = UIColor.white // Couleur émise
-                                material.emission.intensity = 0.2 // Intensité de la lumière émise
-                                
-                                // Augmenter la réflexion spéculaire
-                                material.specular.contents = UIColor.white
-                                material.shininess = 0.7 // Contrôle la brillance
-                            
-                                
-                                
-                                // Ajouter la texture shaded comme diffuse alternative (si besoin)
-                                            let shadedMaterial = SCNMaterial()
-                                            shadedMaterial.diffuse.contents = UIImage(named: "shaded.png") // Shaded texture
-                                
-                                // Appliquer le matériau à la géométrie
-                                       node.geometry?.materials = [material]
-
-                                
-                                // Add camera to the scene
-                                let cameraNode = SCNNode()
-                                cameraNode.camera = SCNCamera()
-                                cameraNode.position = SCNVector3(x: -1.25, y: 0, z: 14)
-                                scnScene.rootNode.addChildNode(cameraNode)
-                                
-                                return scnScene
-                            }()
-                            
-                            scene.addChild(model)
-                            return scene
-                        }(), options: [.allowsTransparency])
-                        .frame(height: 150)
-                        .background(Color.clear)
-
-                        
-                  /*      // Gift button and timer
-                        VStack(spacing: 8) {
-                            NavigationLink(destination: Text("Gifts")) {
-                                VStack {
-                                    Image(systemName: "gift.fill")
-                                        .font(.system(size: 24))
-                                    Text("Gift")
-                                        .font(.system(size: 12, weight: .medium))
-                                }
-                                .foregroundColor(.gray)
-                                .frame(width: 60, height: 60)
-                                .background(
-                                    Circle()
-                                        .fill(Color.white.opacity(1))
-                                        .overlay(
-                                            Circle()
-                                                .stroke(Color.white, lineWidth: 1)
-                                        )
-                                        .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
+                        // 3D Model View with Legendary Halo
+                        ZStack {
+                            // Base rectangle with depth effect
+                            RoundedRectangle(cornerRadius: 25)
+                                .fill(Color("mint").opacity(0.1))
+                                .frame(height: 250)
+                                .overlay(
+                                    
+                                    RoundedRectangle(cornerRadius: 25)
+                                        .stroke(Color("mint").opacity(0.3), lineWidth: 1)
                                 )
-                            }
-                            .disabled(giftAvailableIn > 0)
+                                .shadow(color: Color("mint").opacity(0.1), radius: 10, x: 0, y: 5)
                             
-                            if giftAvailableIn > 0 {
-                                HStack {
-                                    Image(systemName: "clock")
-                                        .foregroundColor(.gray)
-                                    Text(giftTimeRemainingString())
-                                        .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(.gray)
-                                }
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 15)
-                                .background(
-                                    Capsule()
-                                        .fill(Color.white)
-                                        .shadow(color: .gray.opacity(0.4), radius: 4)
+                            // Surface rectangle
+                            RoundedRectangle(cornerRadius: 25)
+                                .fill(Color.white.opacity(1))
+                                .frame(height: 170)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 25)
+                                        .stroke(Color.white, lineWidth: 1)
+                                    
                                 )
+                                .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
+                            
+                                .offset(y: 30) // Added offset to move down
+
+                            
+                            // 3D Model positioned above halo
+                            VStack(spacing: -80) {
+                                // 3D Model
+                                SpriteView(scene: { () -> SKScene in
+                                    let scene = SKScene()
+                                    scene.backgroundColor = UIColor.clear
+                                    
+                                    let model = SK3DNode(viewportSize: .init(width: 15, height: 15))
+                                    model.scnScene = {
+                                        let scnScene = SCNScene(named: "car.obj")!
+                                        scnScene.background.contents = UIColor.clear
+                                        
+                                        let node = scnScene.rootNode.childNodes.first!
+                                        
+                                        // Add rotation animation
+                                        let rotation = CABasicAnimation(keyPath: "rotation")
+                                        rotation.fromValue = NSValue(scnVector4: SCNVector4(0, 1, 0, 0))
+                                        rotation.toValue = NSValue(scnVector4: SCNVector4(0, 1, 0, Float.pi * 2))
+                                        rotation.duration = 15
+                                        rotation.repeatCount = .infinity
+                                        node.addAnimation(rotation, forKey: "rotate")
+                                        
+                                        
+                                        // Ajouter les textures au matériau
+                                                let material = SCNMaterial()
+                                                material.diffuse.contents = UIImage(named: "texture_diffuse.png") // Texture diffuse
+                                                material.metalness.contents = UIImage(named: "texture_metallic.png") // Texture métallique
+                                                material.normal.contents = UIImage(named: "texture_normal.png") // Carte de normales
+                                                material.roughness.contents = UIImage(named: "texture_roughness.png") // Rugosité
+                                        
+                                        // Ajouter une émission pour rendre l'objet plus lumineux
+                                        material.emission.contents = UIColor.white // Couleur émise
+                                        material.emission.intensity = 0.2 // Intensité de la lumière émise
+                                        
+                                        // Augmenter la réflexion spéculaire
+                                        material.specular.contents = UIColor.white
+                                        material.shininess = 0.7 // Contrôle la brillance
+                                    
+                                        
+                                        
+                                        // Ajouter la texture shaded comme diffuse alternative (si besoin)
+                                                    let shadedMaterial = SCNMaterial()
+                                                    shadedMaterial.diffuse.contents = UIImage(named: "shaded.png") // Shaded texture
+                                        
+                                        // Appliquer le matériau à la géométrie
+                                               node.geometry?.materials = [material]
+
+                                        
+                                        // Add camera to the scene
+                                        let cameraNode = SCNNode()
+                                        cameraNode.camera = SCNCamera()
+                                        cameraNode.position = SCNVector3(x: -1.25, y: 0, z: 14)
+                                        scnScene.rootNode.addChildNode(cameraNode)
+                                        
+                                        return scnScene
+                                    }()
+                                    
+                                    scene.addChild(model)
+                                    return scene
+                                }(), options: [.allowsTransparency])
+                                .frame(height: 150)
+                                .background(Color.clear)
+                                .zIndex(2) // Ensure model is above halo
+                                
+                                // Legendary halo effect positioned below model
+                                                      ZStack {
+                                                          // Base glow
+                                                          RoundedRectangle(cornerRadius: 25)
+                                                              .fill(
+                                                                  RadialGradient(
+                                                                      gradient: Gradient(colors: [
+                                                                        Color.white.opacity(0.1),
+                                                                        Color.white.opacity(0.1),
+                                                                          Color.clear
+                                                                      ]),
+                                                                      center: .center,
+                                                                      startRadius: 80,
+                                                                      endRadius: 150
+                                                                  )
+                                                              )
+                                                              .frame(width: 300, height: 200)
+                                                              .blur(radius: 45)
+                                                          
+                                                          // Animated rays
+                                                          ForEach(0..<10) { i in
+                                                              Rectangle()
+                                                                  .fill(
+                                                                      LinearGradient(
+                                                                          colors: [
+                                                                              Color.yellow.opacity(0.6),
+                                                                              Color.orange.opacity(0.3),
+                                                                              Color.clear
+                                                                          ],
+                                                                          startPoint: .center,
+                                                                          endPoint: .trailing
+                                                                      )
+                                                                  )
+                                                                  .frame(width: 200, height: 0.2)
+                                                                  .rotationEffect(.degrees(Double(i) * 45))
+                                                                  .blur(radius: 5)
+                                                          }
+                                                      }
+                                                      .offset(y: -0)
+                                                      .zIndex(1)
+                                
+                                
+                                
+                                // Season availability bubble
+                                                              Text("Only available this season")
+                                                                  .font(.system(size: 12, weight: .medium))
+                                                                  .foregroundColor(.white)
+                                                                  .padding(.horizontal, 12)
+                                                                  .padding(.vertical, 6)
+                                                                  .background(
+                                                                      Capsule()
+                                                                        .fill(Color.red.opacity(0.9))
+                                                                        .shadow(color: .black.opacity(0.2), radius: 4)
+                                                                  )
+                                                                  .overlay(
+                                                                      Capsule()
+                                                                          .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                                                                  )
+                                                                  .offset(y: -15)
+                                                                  .zIndex(3)
                             }
-                        }*/
+                            .padding(-10)
+                        }
+                        .padding(.horizontal)
                     }
-                    .padding(.top, 10)
+                    .padding(.top, -10)
                     .padding(.horizontal)
                     
                     Spacer()
