@@ -1,4 +1,3 @@
-
 import Foundation
 
 enum CardRarity: String {
@@ -22,7 +21,11 @@ struct BoosterCard: Identifiable {
     let id = UUID()
     let name: String
     let rarity: CardRarity
-}
-
-
-
+    let number: Int
+    
+    init(name: String, rarity: CardRarity, number: Int) {
+        self.name = name
+        self.rarity = rarity
+        self.number = number
+    }
+} 

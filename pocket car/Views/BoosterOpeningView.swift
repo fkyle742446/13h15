@@ -152,80 +152,80 @@ struct BoosterOpeningView: View {
     @State private var currentCard: BoosterCard? = nil
 
     let allCards: [BoosterCard] = [
-            // Common (70%)
-            BoosterCard(name: "Mazda MX-5 Miata", rarity: .common),
-            BoosterCard(name: "Volkswagen Golf GTI", rarity: .common),
-            BoosterCard(name: "Ford Mustang GT", rarity: .common),
-            BoosterCard(name: "Chevrolet Camaro SS", rarity: .common),
-            BoosterCard(name: "Toyota Supra Mk4", rarity: .common),
-            BoosterCard(name: "Nissan 370Z", rarity: .common),
-            BoosterCard(name: "Subaru WRX STI", rarity: .common),
-            BoosterCard(name: "Honda Civic Type R", rarity: .common),
-            BoosterCard(name: "BMW M3 E46", rarity: .common),
-            BoosterCard(name: "Audi TT RS", rarity: .common),
-            BoosterCard(name: "Mercedes-AMG A45", rarity: .common),
-            BoosterCard(name: "Porsche 718 Cayman", rarity: .common),
-            BoosterCard(name: "Alfa Romeo 4C", rarity: .common),
-            BoosterCard(name: "Lexus RC F", rarity: .common),
-            BoosterCard(name: "Mini Cooper JCW", rarity: .common),
-            BoosterCard(name: "Hyundai i30 N", rarity: .common),
-            BoosterCard(name: "Fiat 500 Abarth", rarity: .common),
-            BoosterCard(name: "Peugeot 208 GTi", rarity: .common),
-            BoosterCard(name: "Renault Clio RS", rarity: .common),
-            BoosterCard(name: "Ford Focus RS", rarity: .common),
-            BoosterCard(name: "Dodge Challenger R/T", rarity: .common),
-            BoosterCard(name: "Chevrolet Corvette C6", rarity: .common),
-            BoosterCard(name: "Tesla Model 3 Performance", rarity: .common),
-            BoosterCard(name: "Mazda RX-8", rarity: .common),
-            BoosterCard(name: "Mitsubishi Lancer Evo X", rarity: .common),
-            BoosterCard(name: "Toyota GT86", rarity: .common),
-            BoosterCard(name: "Nissan Silvia S15", rarity: .common),
-            BoosterCard(name: "Jaguar F-Type P300", rarity: .common),
-            BoosterCard(name: "Dodge Charger R/T", rarity: .common),
+            // Common (70%) - Cards 1-29
+            BoosterCard(name: "Mazda MX-5 Miata", rarity: .common, number: 1),
+            BoosterCard(name: "Volkswagen Golf GTI", rarity: .common, number: 2),
+            BoosterCard(name: "Ford Mustang GT", rarity: .common, number: 3),
+            BoosterCard(name: "Chevrolet Camaro SS", rarity: .common, number: 4),
+            BoosterCard(name: "Toyota Supra Mk4", rarity: .common, number: 5),
+            BoosterCard(name: "Nissan 370Z", rarity: .common, number: 6),
+            BoosterCard(name: "Subaru WRX STI", rarity: .common, number: 7),
+            BoosterCard(name: "Honda Civic Type R", rarity: .common, number: 8),
+            BoosterCard(name: "BMW M3 E46", rarity: .common, number: 9),
+            BoosterCard(name: "Audi TT RS", rarity: .common, number: 10),
+            BoosterCard(name: "Mercedes-AMG A45", rarity: .common, number: 11),
+            BoosterCard(name: "Porsche 718 Cayman", rarity: .common, number: 12),
+            BoosterCard(name: "Alfa Romeo 4C", rarity: .common, number: 13),
+            BoosterCard(name: "Lexus RC F", rarity: .common, number: 14),
+            BoosterCard(name: "Mini Cooper JCW", rarity: .common, number: 15),
+            BoosterCard(name: "Hyundai i30 N", rarity: .common, number: 16),
+            BoosterCard(name: "Fiat 500 Abarth", rarity: .common, number: 17),
+            BoosterCard(name: "Peugeot 208 GTi", rarity: .common, number: 18),
+            BoosterCard(name: "Renault Clio RS", rarity: .common, number: 19),
+            BoosterCard(name: "Ford Focus RS", rarity: .common, number: 20),
+            BoosterCard(name: "Dodge Challenger R/T", rarity: .common, number: 21),
+            BoosterCard(name: "Chevrolet Corvette C6", rarity: .common, number: 22),
+            BoosterCard(name: "Tesla Model 3 Performance", rarity: .common, number: 23),
+            BoosterCard(name: "Mazda RX-8", rarity: .common, number: 24),
+            BoosterCard(name: "Mitsubishi Lancer Evo X", rarity: .common, number: 25),
+            BoosterCard(name: "Toyota GT86", rarity: .common, number: 26),
+            BoosterCard(name: "Nissan Silvia S15", rarity: .common, number: 27),
+            BoosterCard(name: "Jaguar F-Type P300", rarity: .common, number: 28),
+            BoosterCard(name: "Dodge Charger R/T", rarity: .common, number: 29),
 
-            // Rare (25%)
-            BoosterCard(name: "BMW M4 GTS", rarity: .rare),
-            BoosterCard(name: "Porsche 911 Carrera S", rarity: .rare),
-            BoosterCard(name: "Mercedes-AMG C63 S Coupe", rarity: .rare),
-            BoosterCard(name: "Chevrolet Corvette C8", rarity: .rare),
-            BoosterCard(name: "Lamborghini Huracan Evo", rarity: .rare),
-            BoosterCard(name: "Ferrari 488 GTB", rarity: .rare),
-            BoosterCard(name: "McLaren 570S", rarity: .rare),
-            BoosterCard(name: "Aston Martin V8 Vantage", rarity: .rare),
-            BoosterCard(name: "Nissan GT-R R35", rarity: .rare),
-            BoosterCard(name: "Audi R8 V10 Plus", rarity: .rare),
-            BoosterCard(name: "Maserati GranTurismo MC", rarity: .rare),
-            BoosterCard(name: "Bentley Continental GT", rarity: .rare),
-            BoosterCard(name: "Tesla Model S Plaid", rarity: .rare),
-            BoosterCard(name: "Jaguar XKR-S", rarity: .rare),
-            BoosterCard(name: "Lotus Exige S", rarity: .rare),
-            BoosterCard(name: "Shelby GT500", rarity: .rare),
-            BoosterCard(name: "Koenigsegg Jesko Absolut", rarity: .rare),
-            BoosterCard(name: "Lexus LFA", rarity: .rare),
-            BoosterCard(name: "Aston Martin DB11", rarity: .rare),
-            BoosterCard(name: "Bugatti EB110", rarity: .rare),
+            // Rare (25%) - Cards 30-49
+            BoosterCard(name: "BMW M4 GTS", rarity: .rare, number: 30),
+            BoosterCard(name: "Porsche 911 Carrera S", rarity: .rare, number: 31),
+            BoosterCard(name: "Mercedes-AMG C63 S Coupe", rarity: .rare, number: 32),
+            BoosterCard(name: "Chevrolet Corvette C8", rarity: .rare, number: 33),
+            BoosterCard(name: "Lamborghini Huracan Evo", rarity: .rare, number: 34),
+            BoosterCard(name: "Ferrari 488 GTB", rarity: .rare, number: 35),
+            BoosterCard(name: "McLaren 570S", rarity: .rare, number: 36),
+            BoosterCard(name: "Aston Martin V8 Vantage", rarity: .rare, number: 37),
+            BoosterCard(name: "Nissan GT-R R35", rarity: .rare, number: 38),
+            BoosterCard(name: "Audi R8 V10 Plus", rarity: .rare, number: 39),
+            BoosterCard(name: "Maserati GranTurismo MC", rarity: .rare, number: 40),
+            BoosterCard(name: "Bentley Continental GT", rarity: .rare, number: 41),
+            BoosterCard(name: "Tesla Model S Plaid", rarity: .rare, number: 42),
+            BoosterCard(name: "Jaguar XKR-S", rarity: .rare, number: 43),
+            BoosterCard(name: "Lotus Exige S", rarity: .rare, number: 44),
+            BoosterCard(name: "Shelby GT500", rarity: .rare, number: 45),
+            BoosterCard(name: "Koenigsegg Jesko Absolut", rarity: .rare, number: 46),
+            BoosterCard(name: "Lexus LFA", rarity: .rare, number: 47),
+            BoosterCard(name: "Aston Martin DB11", rarity: .rare, number: 48),
+            BoosterCard(name: "Bugatti EB110", rarity: .rare, number: 49),
 
-            // Epic (3%)
-            BoosterCard(name: "Lamborghini Aventador SVJ", rarity: .epic),
-            BoosterCard(name: "Ferrari Enzo", rarity: .epic),
-            BoosterCard(name: "Pagani Zonda Cinque", rarity: .epic),
-            BoosterCard(name: "Koenigsegg Agera RS", rarity: .epic),
-            BoosterCard(name: "McLaren P1", rarity: .epic),
-            BoosterCard(name: "Porsche 918 Spyder", rarity: .epic),
-            BoosterCard(name: "Bugatti Veyron Super Sport", rarity: .epic),
-            BoosterCard(name: "Lamborghini Veneno", rarity: .epic),
-            BoosterCard(name: "Ferrari LaFerrari", rarity: .epic),
-            BoosterCard(name: "Aston Martin Valkyrie", rarity: .epic),
+            // Epic (3%) - Cards 50-59
+            BoosterCard(name: "Lamborghini Aventador SVJ", rarity: .epic, number: 50),
+            BoosterCard(name: "Ferrari Enzo", rarity: .epic, number: 51),
+            BoosterCard(name: "Pagani Zonda Cinque", rarity: .epic, number: 52),
+            BoosterCard(name: "Koenigsegg Agera RS", rarity: .epic, number: 53),
+            BoosterCard(name: "McLaren P1", rarity: .epic, number: 54),
+            BoosterCard(name: "Porsche 918 Spyder", rarity: .epic, number: 55),
+            BoosterCard(name: "Bugatti Veyron Super Sport", rarity: .epic, number: 56),
+            BoosterCard(name: "Lamborghini Veneno", rarity: .epic, number: 57),
+            BoosterCard(name: "Ferrari LaFerrari", rarity: .epic, number: 58),
+            BoosterCard(name: "Aston Martin Valkyrie", rarity: .epic, number: 59),
 
-            // Legendary (2%)
-            BoosterCard(name: "Bugatti Chiron Super Sport 300+", rarity: .legendary),
-            BoosterCard(name: "McLaren F1", rarity: .legendary),
-            BoosterCard(name: "Ferrari F40", rarity: .legendary),
-            BoosterCard(name: "Pagani Zonda R", rarity: .legendary),
-            BoosterCard(name: "Lamborghini Sian FKP 37", rarity: .legendary),
-            BoosterCard(name: "Koenigsegg Regera", rarity: .legendary),
-            BoosterCard(name: "Rimac Nevera", rarity: .legendary),
-            BoosterCard(name: "Aston Martin One-77", rarity: .legendary)
+            // Legendary (2%) - Cards 60-67
+            BoosterCard(name: "Bugatti Chiron Super Sport 300+", rarity: .legendary, number: 60),
+            BoosterCard(name: "McLaren F1", rarity: .legendary, number: 61),
+            BoosterCard(name: "Ferrari F40", rarity: .legendary, number: 62),
+            BoosterCard(name: "Pagani Zonda R", rarity: .legendary, number: 63),
+            BoosterCard(name: "Lamborghini Sian FKP 37", rarity: .legendary, number: 64),
+            BoosterCard(name: "Koenigsegg Regera", rarity: .legendary, number: 65),
+            BoosterCard(name: "Rimac Nevera", rarity: .legendary, number: 66),
+            BoosterCard(name: "Aston Martin One-77", rarity: .legendary, number: 67)
         ]
 
     var body: some View {
@@ -280,16 +280,18 @@ struct BoosterOpeningView: View {
                                     .frame(width: 300, height: 400) // Increased particle area
                                     .id(currentCardIndex) // Force view recreation for each card
                                 
-                                // Halo effect
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(haloColor(for: selectedCard.rarity))
-                                    .blur(radius: 20)
-                                    .frame(width: 250, height: 350)
-                                    .opacity(0.7)
-                                    .scaleEffect(cardScale)
-                                    .offset(y: cardOffset + dragOffset)
-                                
-                                HolographicCard(cardImage: selectedCard.name)
+                                // Halo effect that follows holographic animation
+                                HolographicCard(
+                                    cardImage: selectedCard.name,
+                                    rarity: selectedCard.rarity,
+                                    cardNumber: selectedCard.number
+                                )
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .fill(haloColor(for: selectedCard.rarity))
+                                            .blur(radius: 20)
+                                            .opacity(0.7)
+                                    )
                                     .scaleEffect(cardScale)
                                     .offset(y: cardOffset + dragOffset)
                                     .modifier(AutoHolographicAnimation())
@@ -439,5 +441,3 @@ struct AutoHolographicAnimation: ViewModifier {
             }
     }
 }
-
-
