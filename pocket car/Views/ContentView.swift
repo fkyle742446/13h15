@@ -103,7 +103,7 @@ struct ContentView: View {
                                     let scene = SKScene()
                                     scene.backgroundColor = UIColor.clear
                                     
-                                    let model = SK3DNode(viewportSize: .init(width: 15, height: 15))
+                                    let model = SK3DNode(viewportSize: .init(width: 12, height: 12))
                                     model.scnScene = {
                                         let scnScene = SCNScene(named: "car.obj")!
                                         scnScene.background.contents = UIColor.clear
@@ -147,7 +147,7 @@ struct ContentView: View {
                                         // Add camera to the scene
                                         let cameraNode = SCNNode()
                                         cameraNode.camera = SCNCamera()
-                                        cameraNode.position = SCNVector3(x: -1.25, y: 0, z: 14)
+                                        cameraNode.position = SCNVector3(x: -1.6, y: 0, z: 14)
                                         scnScene.rootNode.addChildNode(cameraNode)
                                         
                                         return scnScene
@@ -211,7 +211,13 @@ struct ContentView: View {
                                                                   .padding(.vertical, 6)
                                                                   .background(
                                                                       Capsule()
-                                                                        .fill(Color.red.opacity(0.9))
+                                                                        .fill(
+                                                                                                                       LinearGradient(
+                                                                                                                           colors: [Color.yellow, Color.orange],
+                                                                                                                           startPoint: .leading,
+                                                                                                                           endPoint: .trailing
+                                                                                                                       )
+                                                                                                                   )
                                                                         .shadow(color: .black.opacity(0.2), radius: 4)
                                                                   )
                                                                   .overlay(

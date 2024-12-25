@@ -150,6 +150,7 @@ struct BoosterOpeningView: View {
     @State private var dragOffset: CGFloat = 0
     @State private var showArrowIndicator = true
     @State private var currentCard: BoosterCard? = nil
+    @State private var isTransitioning = false // Add this state variable
 
     let allCards: [BoosterCard] = [
             // Common (70%) - Cards 1-29
@@ -298,6 +299,7 @@ struct BoosterOpeningView: View {
                                     .gesture(
                                         DragGesture()
                                             .onChanged { gesture in
+                                                if isTransitioning { return } // Ignore gestures during transition
                                                 let translation = gesture.translation.height
                                                 if translation < 0 { // Only allow upward swipes
                                                     dragOffset = translation
@@ -305,7 +307,9 @@ struct BoosterOpeningView: View {
                                                 }
                                             }
                                             .onEnded { gesture in
+                                                if isTransitioning { return } // Ignore gestures during transition
                                                 if dragOffset < -50 { // Threshold for card switch
+                                                    isTransitioning = true // Start transition
                                                     withAnimation(.easeInOut(duration: 0.3)) {
                                                         cardOffset = -UIScreen.main.bounds.height
                                                     }
@@ -321,6 +325,7 @@ struct BoosterOpeningView: View {
                                                             currentCard = randomCard()
                                                             SoundManager.shared.playSound(for: currentCard!.rarity)
                                                         }
+                                                        isTransitioning = false // End transition
                                                     }
                                                 } else {
                                                     withAnimation {
@@ -331,6 +336,8 @@ struct BoosterOpeningView: View {
                                             }
                                     )
                                     .onTapGesture {
+                                        if isTransitioning { return } // Ignore taps during transition
+                                        isTransitioning = true // Start transition
                                         withAnimation(.easeInOut(duration: 0.3)) {
                                             cardOffset = -UIScreen.main.bounds.height
                                         }
@@ -346,6 +353,7 @@ struct BoosterOpeningView: View {
                                                 currentCard = randomCard()
                                                 SoundManager.shared.playSound(for: currentCard!.rarity)
                                             }
+                                            isTransitioning = false // End transition
                                         }
                                     }
                                     .onAppear {
