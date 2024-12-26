@@ -3,12 +3,37 @@ import AVFoundation
 import SceneKit
 import SpriteKit
 
+// Add the glow extension
+extension View where Self: Shape {
+    func glow(
+        fill: some ShapeStyle,
+        lineWidth: Double,
+        blurRadius: Double = 8.0,
+        lineCap: CGLineCap = .round
+    ) -> some View {
+        self
+            .stroke(style: StrokeStyle(lineWidth: lineWidth / 2, lineCap: lineCap))
+            .fill(fill)
+            .overlay {
+                self
+                    .stroke(style: StrokeStyle(lineWidth: lineWidth, lineCap: lineCap))
+                    .fill(fill)
+                    .blur(radius: blurRadius)
+            }
+            .overlay {
+                self
+                    .stroke(style: StrokeStyle(lineWidth: lineWidth, lineCap: lineCap))
+                    .fill(fill)
+                    .blur(radius: blurRadius / 2)
+            }
+    }
+}
 
 struct ContentView: View {
     @StateObject var collectionManager = CollectionManager()
     @State private var floatingOffset: CGFloat = 0
     @State private var shadowRadius: CGFloat = 15
-    @State private var boosterAvailableIn: TimeInterval = 1 * 3 // 3 seconds for testing
+    @State private var boosterAvailableIn: TimeInterval = 1 * 20 // 3 seconds for testing
     @State private var timer: Timer? = nil
     @State private var giftAvailableIn: TimeInterval = 1 * 10 // 10 seconds for testing
     
@@ -17,6 +42,10 @@ struct ContentView: View {
     @State private var glareOffset: CGFloat = -200
     @State private var booster1GlareOffset: CGFloat = -200
     @State private var booster2GlareOffset: CGFloat = -200
+    @State private var rotationAngle: Double = 0
+    @State private var rotationAngle2: Double = 180 // Added second rotation angle
+    @State private var isCollectionPressed: Bool = false
+    @State private var isShopPressed: Bool = false
     
     var body: some View {
         NavigationView {
@@ -263,7 +292,11 @@ struct ContentView: View {
                                 Spacer()
                                 HStack(spacing: 20) {
                                     // First booster with glare
-                                    NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager, boosterNumber: 1)) {
+                                    NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager, boosterNumber: 1)
+                                        .onDisappear {
+                                            boosterAvailableIn = 1 * 3 // Reset timer when returning from booster opening
+                                        }
+                                    ) {
                                         ZStack {
                                             Image("booster_closed_1")
                                                 .resizable()
@@ -303,7 +336,11 @@ struct ContentView: View {
                                     }
 
                                     // Second booster with glare
-                                    NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager, boosterNumber: 2)) {
+                                    NavigationLink(destination: BoosterOpeningView(collectionManager: collectionManager, boosterNumber: 2)
+                                        .onDisappear {
+                                            boosterAvailableIn = 1 * 3 // Reset timer when returning from booster opening
+                                        }
+                                    ) {
                                         ZStack {
                                             Image("booster_closed_2")
                                                 .resizable()
@@ -374,47 +411,105 @@ struct ContentView: View {
 
                         // Collection and Shop buttons
                         HStack(spacing: 20) {
+                            // Collection Button with animated glow effect
                             NavigationLink(destination: CollectionView(collectionManager: collectionManager)) {
-                                VStack {
-                                    Image(systemName: "rectangle.stack.fill")
-                                        .font(.system(size: 30))
-                                    Text("Collection")
-                                        .font(.system(size: 14, weight: .medium))
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 20)
-                                .background(
+                                ZStack {
+                                    // Animated Glowing border
                                     RoundedRectangle(cornerRadius: 20)
-                                        .fill(Color.white.opacity(1))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 20)
-                                                .stroke(Color.white, lineWidth: 1)
+                                        .glow(
+                                            fill: .angularGradient(
+                                                colors: [.blue, .purple, .red, .orange, .yellow, .blue],
+                                                center: .center,
+                                                startAngle: .degrees(rotationAngle),
+                                                endAngle: .degrees(rotationAngle + 360)
+                                            ),
+                                            lineWidth: 3.0,
+                                            blurRadius: 6.0
                                         )
-                                        .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
-                                )
+                                        .opacity(0.7)
+                                    
+                                    // Button content
+                                    VStack {
+                                        Image(systemName: "rectangle.stack.fill")
+                                            .font(.system(size: 30))
+                                        Text("Collection")
+                                            .font(.system(size: 14, weight: .medium))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 20)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .fill(Color.white.opacity(1))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .stroke(Color.white, lineWidth: 1)
+                                            )
+                                            .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
+                                    )
+                                }
+                                .scaleEffect(isCollectionPressed ? 0.5 : 1.0)
+                                .onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity, pressing: { pressing in
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        isCollectionPressed = pressing
+                                    }
+                                }, perform: { })
                             }
+                            .foregroundColor(.gray)
                             
                             NavigationLink(destination: Text("Shop")) {
-                                VStack {
-                                    Image(systemName: "bag.fill")
-                                        .font(.system(size: 30))
-                                    Text("Shop")
-                                        .font(.system(size: 14, weight: .medium))
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 20)
-                                .background(
+                                ZStack {
+                                    // Animated Glowing border
                                     RoundedRectangle(cornerRadius: 20)
-                                        .fill(Color.white.opacity(1))
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 20)
-                                                .stroke(Color.white, lineWidth: 1)
+                                        .glow(
+                                            fill: .angularGradient(
+                                                colors: [.blue, .purple, .red, .orange, .yellow, .blue],
+                                                center: .center,
+                                                startAngle: .degrees(rotationAngle2),
+                                                endAngle: .degrees(rotationAngle2 + 360)
+                                            ),
+                                            lineWidth: 3.0,
+                                            blurRadius: 6.0
                                         )
-                                        .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
-                                )
+                                        .opacity(0.7)
+                                    
+                                    // Button content
+                                    VStack {
+                                        Image(systemName: "bag.fill")
+                                            .font(.system(size: 30))
+                                        Text("Shop")
+                                            .font(.system(size: 14, weight: .medium))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 20)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .fill(Color.white.opacity(1))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .stroke(Color.white, lineWidth: 1)
+                                            )
+                                            .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
+                                    )
+                                }
+                                .scaleEffect(isShopPressed ? 0.5 : 1.0)
+                                .onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity, pressing: { pressing in
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        isShopPressed = pressing
+                                    }
+                                }, perform: { })
+                            }
+                            .foregroundColor(.gray)
+                        }
+                        .onAppear {
+                            withAnimation(.linear(duration: 3)
+                                .repeatForever(autoreverses: false)) {
+                                rotationAngle = 360
+                            }
+                            withAnimation(.linear(duration: 5)
+                                .repeatForever(autoreverses: false)) {
+                                rotationAngle2 = 540 // Different speed and starting point
                             }
                         }
-                        .foregroundColor(.gray)
                         .padding(.horizontal)
 
                         // Bottom progress bar
@@ -430,7 +525,13 @@ struct ContentView: View {
                             }
                             
                             ProgressView(value: Double(collectionManager.cards.count), total: 67)
-                                .tint(.pink)
+                                .tint(
+                                    LinearGradient(
+                                        colors: [Color.yellow, Color.orange],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
                                 .background(Color.white)
                         }
                         .padding()
