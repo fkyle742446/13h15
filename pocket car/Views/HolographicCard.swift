@@ -14,29 +14,16 @@ struct HolographicCard: View {
     @State var translation: CGSize = .zero
     @GestureState private var press = false
     
-    private func haloColor(for rarity: CardRarity) -> Color {
+    private func cardThemeColor(for rarity: CardRarity) -> Color {
         switch rarity {
         case .common:
-            return Color.white
+            return Color(red: 0.75, green: 0.75, blue: 0.75) // Silver
         case .rare:
-            return Color.blue
+            return Color(red: 0.0, green: 0.48, blue: 0.97) // Blue
         case .epic:
-            return Color.purple
+            return Color(red: 0.5, green: 0.0, blue: 0.5) // Purple
         case .legendary:
-            return Color(red: 1, green: 0.84, blue: 0)
-        }
-    }
-
-    private func starsForRarity(_ rarity: CardRarity) -> Int {
-        switch rarity {
-        case .common:
-            return 0
-        case .rare:
-            return 1
-        case .epic:
-            return 2
-        case .legendary:
-            return 3
+            return Color(red: 1, green: 0.84, blue: 0) // Gold
         }
     }
 
@@ -54,106 +41,115 @@ struct HolographicCard: View {
 
     var body: some View {
         ZStack {
-            // Halo effect that follows the card movement
+            // Card background with rarity color and texture
             RoundedRectangle(cornerRadius: 15)
-                .fill(haloColor(for: rarity))
-                .blur(radius: 20)
-                .opacity(0.7)
-                .frame(width: 250, height: 350)
-            
-            // Holographic base gradient with dynamic movement
-            LinearGradient(
-                gradient: Gradient(colors: [.blue, .purple, .pink, .yellow, .green]),
-                startPoint: UnitPoint(
-                    x: 0.5 + translation.width / 500,
-                    y: 0.5 + translation.height / 500
-                ),
-                endPoint: UnitPoint(
-                    x: 1.0 + translation.width / 250,
-                    y: 1.0 + translation.height / 250
+                .fill(cardThemeColor(for: rarity))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 15)
+                        .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                        .blur(radius: 1)
                 )
-            )
-            .frame(width: 250, height: 350)
-            .mask(
-                RoundedRectangle(cornerRadius: 15)
-                    .frame(width: 250, height: 350)
-            )
-            
-            // Card image
-            Image(cardImage)
-                .resizable()
-                .scaledToFit()
                 .frame(width: 250, height: 350)
-                .cornerRadius(15)
             
-            // Dynamic holographic shine effect
+            // Main card content
+            VStack(spacing: 0) {
+                // Title bar with name and rarity
+                HStack {
+                    Text("№ \(cardNumber)")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(.white)
+                        .shadow(color: .black.opacity(0.3), radius: 1, x: 1, y: 1)
+                        .padding(.leading, 15)
+                    
+                    Spacer()
+                    
+                    Text("\(rarity.rawValue.uppercased())")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                        .shadow(color: .black.opacity(0.3), radius: 1, x: 1, y: 1)
+                        .padding(.trailing, 15)
+                }
+                .padding(.vertical, 12)
+                .background(Color.black.opacity(0.2))
+                
+                // Image section with decorative frame
+                ZStack {
+                    // Outer frame
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.white.opacity(0.9))
+                        .shadow(color: .black.opacity(0.2), radius: 2)
+                    
+                    // Inner frame
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(cardThemeColor(for: rarity), lineWidth: 2)
+                        .padding(4)
+                    
+                    // Car image
+                    Image(cardImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 220, height: 240)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                        .padding(8)
+                }
+                .frame(width: 240, height: 260)
+                .padding(.vertical, 10)
+                
+                // Stats and info section
+                VStack(spacing: 12) {
+                    // Card number with decorative elements
+                    HStack {
+                        Spacer()
+                        Text("№ \(cardNumber)/67")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule()
+                                    .fill(Color.black.opacity(0.3))
+                            )
+                    }
+                    .padding(.horizontal, 15)
+                }
+            }
+            
+            // Enhanced holographic effect
             LinearGradient(
-                colors: [.clear, .white.opacity(0.4), .clear],
+                colors: [
+                    .clear,
+                    .white.opacity(0.4),
+                    .white.opacity(0.2),
+                    .clear
+                ],
                 startPoint: UnitPoint(
-                    x: 0.5 + translation.width / 500,
-                    y: 0.5 + translation.height / 500
+                    x: 0.2 + translation.width / 500,
+                    y: 0.2 + translation.height / 500
                 ),
                 endPoint: UnitPoint(
-                    x: 1.0 + translation.width / 250,
-                    y: 1.0 + translation.height / 250
+                    x: 0.8 + translation.width / 250,
+                    y: 0.8 + translation.height / 250
                 )
             )
             .frame(width: 250, height: 350)
             .clipShape(RoundedRectangle(cornerRadius: 15))
+            .blendMode(.overlay)
             
-           // Card border effect
-           RoundedRectangle(cornerRadius: 15)
-               .strokeBorder(
-                   LinearGradient(
-                       colors: [
-                           .yellow.opacity(0.8),
-                           .orange.opacity(0.8),
-                           .yellow.opacity(0.8)
-                       ],
-                       startPoint: UnitPoint(
-                           x: translation.width / 250,
-                           y: translation.height / 250
-                       ),
-                       endPoint: UnitPoint(
-                           x: 1 + translation.width / 250,
-                           y: 1 + translation.height / 250
-                       )
-                   ),
-                   lineWidth: 8
-               )
-               .frame(width: 250, height: 350)
-               .animation(.easeInOut(duration: 0.3), value: translation)
-           
-           // Info box
-           VStack(alignment: .leading, spacing: 4) {
-               Text("\(cardNumber)/67")
-                   .font(.system(size: 10, weight: .regular))
-                   .foregroundColor(.black)
-               
-               /*  Text(rarity.rawValue.capitalized)
-                                 .font(.system(size: 8, weight: .medium))
-                                 .foregroundColor(.gray) */
-           }
-           .padding(6)
-           .background(
-               RoundedRectangle(cornerRadius: 8)
-                .fill(Color.yellow.opacity(0.9))
-                   .shadow(color: .black.opacity(0.2), radius: 1)
-           )
-           .offset(x: 85, y: 147)
-           
-           // Rarity stars
-           if starsForRarity(rarity) > 0 {
-               HStack(spacing: 2) {
-                   ForEach(0..<starsForRarity(rarity), id: \.self) { _ in
-                       Image(systemName: "star.fill")
-                           .foregroundColor(.yellow)
-                           .shadow(color: .black.opacity(0.3), radius: 1)
-                   }
-               }
-               .font(.system(size: 10))
-               .offset(x: -90, y: 147)
-           }
+            // Premium border effect
+            RoundedRectangle(cornerRadius: 15)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [
+                            cardThemeColor(for: rarity).opacity(0.8),
+                            .white.opacity(0.5),
+                            cardThemeColor(for: rarity).opacity(0.8)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 4
+                )
+                .frame(width: 250, height: 350)
         }
         .frame(width: 250, height: 350)
         .rotation3DEffect(
