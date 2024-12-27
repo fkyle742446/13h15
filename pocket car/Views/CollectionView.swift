@@ -3,6 +3,7 @@ import SwiftUI
 struct CollectionView: View {
     @ObservedObject var collectionManager: CollectionManager
     @State private var selectedCard: BoosterCard? = nil
+    @State private var showingRarityInfo = false
 
     var body: some View {
         NavigationView {
@@ -17,6 +18,19 @@ struct CollectionView: View {
                             .font(.system(size: 28, weight: .bold, design: .default))
                             .foregroundColor(.white)
                             .padding(.top, 20)
+
+                        Button(action: {
+                            showingRarityInfo.toggle()
+                        }) {
+                            Image(systemName: "info.circle")
+                                .foregroundColor(.white)
+                                .font(.system(size: 20))
+                        }
+                        .padding(.top, 20)
+                        .padding(.leading, 8)
+                        .sheet(isPresented: $showingRarityInfo) {
+                            RarityInfoView()
+                        }
 
                         Spacer()
 
@@ -38,6 +52,46 @@ struct CollectionView: View {
                     ZoomedCardView(selectedCard: $selectedCard)
                 }
             }
+        }
+    }
+}
+
+struct RarityInfoView: View {
+    var body: some View {
+        NavigationView {
+            List {
+                Section(header: Text("Probabilités des cartes")) {
+                    HStack {
+                        Text("Commune")
+                        Spacer()
+                        Text("60%")
+                            .foregroundColor(.gray)
+                    }
+                    HStack {
+                        Text("Rare")
+                            .foregroundColor(.blue)
+                        Spacer()
+                        Text("25%")
+                            .foregroundColor(.gray)
+                    }
+                    HStack {
+                        Text("Épique")
+                            .foregroundColor(.purple)
+                        Spacer()
+                        Text("10%")
+                            .foregroundColor(.gray)
+                    }
+                    HStack {
+                        Text("Légendaire")
+                            .foregroundColor(.yellow)
+                        Spacer()
+                        Text("5%")
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+            .navigationTitle("Rareté des cartes")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
