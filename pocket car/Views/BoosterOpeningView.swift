@@ -399,7 +399,7 @@ struct BoosterOpeningView: View {
     // Fonction pour tirer une carte aléatoire
     func randomCard() -> BoosterCard {
         let probabilities: [CardRarity: Double] = [
-            .common: 0.25,
+            .common: 0.1,
             .rare: 0.25,
             .epic: 0.25,
             .legendary: 0.25

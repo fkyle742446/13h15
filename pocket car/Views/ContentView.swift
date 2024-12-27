@@ -33,7 +33,7 @@ struct ContentView: View {
     @StateObject var collectionManager = CollectionManager()
     @State private var floatingOffset: CGFloat = 0
     @State private var shadowRadius: CGFloat = 15
-    @State private var boosterAvailableIn: TimeInterval = 1 * 20 // 3 seconds for testing
+    @State private var boosterAvailableIn: TimeInterval = 1 * 2 // 3 seconds for testing
     @State private var timer: Timer? = nil
     @State private var giftAvailableIn: TimeInterval = 1 * 10 // 10 seconds for testing
     
