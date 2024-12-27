@@ -55,16 +55,17 @@ struct HolographicCard: View {
             VStack(spacing: 0) {
                 // Title bar with name and rarity
                 HStack {
-                    Text("№ \(cardNumber)")
-                        .font(.system(size: 16, weight: .bold))
+                    Text(cardImage)
+                        .font(.system(size: 10, weight: .bold))
                         .foregroundColor(.white)
                         .shadow(color: .black.opacity(0.3), radius: 1, x: 1, y: 1)
+                        .lineLimit(1)
                         .padding(.leading, 15)
                     
                     Spacer()
                     
                     Text("\(rarity.rawValue.uppercased())")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 10, weight: .bold))
                         .foregroundColor(.white)
                         .shadow(color: .black.opacity(0.3), radius: 1, x: 1, y: 1)
                         .padding(.trailing, 15)
@@ -99,9 +100,17 @@ struct HolographicCard: View {
                 VStack(spacing: 12) {
                     // Card number with decorative elements
                     HStack {
+                        Text("POCKET CAR ILLUSTRATION ©")
+                            .font(.system(size: 8, weight: .bold))
+                            .foregroundColor(.white)
+                            .shadow(color: .black.opacity(0.3), radius: 1, x: 1, y: 1)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 4)
+                        
                         Spacer()
+                        
                         Text("№ \(cardNumber)/67")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.system(size: 10, weight: .medium))
                             .foregroundColor(.white)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 4)
