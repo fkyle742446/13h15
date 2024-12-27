@@ -34,7 +34,7 @@ struct CollectionView: View {
 
                         Spacer()
 
-                        Text("\(collectionManager.cards.count)/67")
+                        Text("\(collectionManager.cards.count)/108")
                             .font(.system(size: 16, weight: .medium, design: .default))
                             .foregroundColor(.white.opacity(0.7))
                             .padding(.top, 20)
@@ -62,9 +62,9 @@ struct RarityInfoView: View {
             List {
                 Section(header: Text("Probabilités des cartes")) {
                     HStack {
-                        Text("Commune")
+                        Text("Common")
                         Spacer()
-                        Text("60%")
+                        Text("70%")
                             .foregroundColor(.gray)
                     }
                     HStack {
@@ -75,26 +75,35 @@ struct RarityInfoView: View {
                             .foregroundColor(.gray)
                     }
                     HStack {
-                        Text("Épique")
+                        Text("Epic")
                             .foregroundColor(.purple)
                         Spacer()
                         Text("10%")
                             .foregroundColor(.gray)
                     }
                     HStack {
-                        Text("Légendaire")
+                        Text("Legendary")
                             .foregroundColor(.yellow)
                         Spacer()
-                        Text("5%")
+                        Text("2%")
                             .foregroundColor(.gray)
                     }
+                    
+                }
+                HStack {
+                    Text("?????")
+                        .foregroundColor(.black)
+                    Spacer()
+                    Text("0,1%")
+                        .foregroundColor(.gray)
+                }
                 }
             }
-            .navigationTitle("Rareté des cartes")
+            .navigationTitle("Drop chance")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
-}
+
 
 struct EmptyCollectionView: View {
     var body: some View {
