@@ -2,6 +2,7 @@ import SwiftUI
 import AVFoundation
 import SceneKit
 import SpriteKit
+import UserNotifications
 
 // Add the glow extension
 extension View where Self: Shape {
@@ -95,6 +96,13 @@ struct ContentView: View {
                         .onAppear {
                             withAnimation(Animation.linear(duration: 15.0).repeatForever(autoreverses: false)) {
                                 glareOffset = 200
+                            }
+                            
+                            // Request notification permission when view appears
+                            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { success, error in
+                                if let error = error {
+                                    print(error.localizedDescription)
+                                }
                             }
                         }
                         
@@ -562,6 +570,18 @@ struct ContentView: View {
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             if boosterAvailableIn > 0 {
                 boosterAvailableIn -= 1
+                if boosterAvailableIn == 0 {
+                    // Schedule notification when timer hits 0
+                    let content = UNMutableNotificationContent()
+                    content.title = "Booster Available!"
+                    content.body = "You can now open a booster"
+                    content.sound = .default
+                    
+                    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+                    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+                    
+                    UNUserNotificationCenter.current().add(request)
+                }
             }
             if giftAvailableIn > 0 {
                 giftAvailableIn -= 1
@@ -632,4 +652,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-

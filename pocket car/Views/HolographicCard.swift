@@ -24,6 +24,9 @@ struct HolographicCard: View {
             return Color(red: 0.5, green: 0.0, blue: 0.5) // Purple
         case .legendary:
             return Color(red: 1, green: 0.84, blue: 0) // Gold
+            
+        case .HolyT:
+            return Color(red: 1, green: 0.84, blue: 0) // Golden color
         }
     }
 

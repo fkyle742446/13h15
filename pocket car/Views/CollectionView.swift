@@ -91,7 +91,7 @@ struct RarityInfoView: View {
                     
                 }
                 HStack {
-                    Text("?????")
+                    Text("Holy Trinity")
                         .foregroundColor(.black)
                     Spacer()
                     Text("0,1%")
@@ -130,6 +130,8 @@ struct CardView: View {
         case .epic:
             return Color.purple
         case .legendary:
+            return Color(red: 1, green: 0.84, blue: 0)
+        case .HolyT:
             return Color(red: 1, green: 0.84, blue: 0)
         }
     }
@@ -191,6 +193,8 @@ struct ZoomedCardView: View {
             return Color.purple
         case .legendary:
             return Color(red: 1, green: 0.84, blue: 0)
+        case .HolyT:
+            return Color(red: 1, green: 0.84, blue: 0) // Golden color
         }
     }
     

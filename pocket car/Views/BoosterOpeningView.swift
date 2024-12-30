@@ -22,6 +22,10 @@ class SoundManager {
         case .legendary:
             soundName = "legendary_reveal"
             volume = 0.7
+            
+        case .HolyT:
+            soundName = "legendary_reveal"
+            volume = 0.7
         }
         
         guard let path = Bundle.main.path(forResource: soundName, ofType: "mp3") else {
@@ -125,6 +129,9 @@ struct ParticleSystem: View {
         case .epic:
             return .purple
         case .legendary:
+            return Color(red: 1, green: 0.84, blue: 0)
+            
+        case .HolyT:
             return Color(red: 1, green: 0.84, blue: 0)
         }
     }
@@ -267,7 +274,16 @@ struct BoosterOpeningView: View {
             BoosterCard(name: "Lamborghini Sian FKP 37", rarity: .legendary, number: 105),
             BoosterCard(name: "Koenigsegg Regera", rarity: .legendary, number: 106),
             BoosterCard(name: "Rimac Nevera", rarity: .legendary, number: 107),
-            BoosterCard(name: "Aston Martin One-77", rarity: .legendary, number: 108)
+            BoosterCard(name: "Aston Martin One-77", rarity: .legendary, number: 108),
+            
+            // HolyT (0,1%) - Cards 109-111
+    
+            BoosterCard(name: "McLaren P1", rarity: .HolyT, number: 109),
+            BoosterCard(name: "Ferrari LaFerrari", rarity: .HolyT, number: 110),
+            BoosterCard(name: "Porsche 918 Spyder", rarity: .HolyT, number: 111)
+            
+            
+            
         ]
 
     var body: some View {
@@ -465,6 +481,8 @@ struct BoosterOpeningView: View {
         case .epic:
             return Color.purple
         case .legendary:
+            return Color(red: 1, green: 0.84, blue: 0) // Golden color
+        case .HolyT:
             return Color(red: 1, green: 0.84, blue: 0) // Golden color
         }
     }
